@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'KronaOneRegular';
+  src: local('KronaOneRegular'), url(./assets/fonts/KronaOneRegular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'AnekTeluguRegular';
+  src: local('AnekteluguRegular'), url(./assets/fonts/AnekTeluguRegular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins'), url(./assets/fonts/Poppins.ttf) format('truetype');
+}
+
+:root {
+  --main-radius: 5px;
+  --main-padding: 5px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height:100% ;
+  justify-content:space-between;
+  /* height: 100vh; */
+}
+
+body {
+  @apply font-poppins;
+  /* position: relative; */
+  /* min-height: 100vh; */
+}
+
+#main {
+  width: 100vw;
+  /* height: 100vh; */
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.svg_fix {
+  shape-renderer: crispEdges;
+}
+
+.containerFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.container .load {
+  margin-top: 1em;
+  color: white;
+}
+
+.container .document {
+  margin: 1em 0;
+}
+
+.react-pdf .Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf .Page {
+  max-width: calc('100% - 2em');
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  margin: 1em;
+}
+
+.react-pdf .canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+.react-pdf .message {
+  padding: 20px;
+  color: white;
+}

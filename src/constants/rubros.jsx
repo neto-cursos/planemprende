@@ -1,0 +1,12 @@
+export const rubros = [{ rubro_id: 1, nomb_rubro: 'Comercial' },
+{ rubro_id: 2, nomb_rubro: 'Comercial' },
+{ rubro_id: 3, nomb_rubro: 'Financiero' },
+{ rubro_id: 4, nomb_rubro: 'Manufactura' },
+{ rubro_id: 5, nomb_rubro: 'Industrial' },
+{ rubro_id: 6, nomb_rubro: 'Tecnológico' },
+{ rubro_id: 7, nomb_rubro: 'Online' },
+{ rubro_id: 8, nomb_rubro: 'Ganadería' },
+{ rubro_id: 9, nomb_rubro: 'Pescadería' },
+{ rubro_id: 10, nomb_rubro: 'Mineria' },
+{ rubro_id: 11, nomb_rubro: 'Servicios' },
+];

@@ -1,0 +1,97 @@
+
+
+.ganttTable {
+  width:95%;
+  /* width: 100%;
+    display: table;*/
+    border-bottom: #e6e4e4 1px solid;
+    border-top: #e6e4e4 1px solid;
+    border-left: #e6e4e4 1px solid;
+    border-right: #e6e4e4 1px solid;
+ 
+  border-radius: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 5px 12px -7px #7e8f94;
+
+  /* max-width: 1000px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  grid-gap: 2em;
+  color: #222;
+  border-bottom: 1px solid #ddd;
+  padding: 1em 0; */
+}
+
+.ganttTable_Header {
+  /* display: table-row;
+  list-style: none; */
+  /* max-width: 1000px; */
+  overflow:hidden;
+  /* margin: auto; */
+  display: grid;
+  /* grid-template-columns: repeat(4,1fr); */
+  grid-template-columns: 4fr 2fr 2fr 3fr 1fr 1fr 1fr 2fr 0.5fr 0.5fr;
+  grid-gap: 0.25rem;
+  color: #222;
+  border-bottom: 1px solid #ddd;
+  padding: 0.25rem 0;
+  text-decoration: underline;
+  border-bottom: unset;
+  font-weight: 800;
+/* grid-auto-rows: 500px;  */
+  grid-auto-rows: minmax(auto, 2.5rem); 
+  
+  /* text-align: right; */
+}
+
+.ganttTable_HeaderSeparator {
+  border-right: 1px solid rgb(196, 196, 196);
+  opacity: 1;
+  margin-left: -2px;
+}
+
+.ganttTable_HeaderItem {
+  font-weight: 800;
+  /* display: table-cell;
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: middle; */
+}
+
+
+@media (max-width: 600px) {
+
+  .ganttTable {
+    display:none;
+  }
+  
+  .ganttTable_Header {
+    display: none; 
+  }
+  
+  .term-grid {
+    grid-template-columns: 1fr;
+    grid-gap: 0.5em;
+  }
+  
+  .term-grid label:first-child {
+    text-align: left;
+    margin: 0;
+  }
+
+  .alternate {
+    margin-top: -10px;
+    font-style: italic;
+    order: 1;
+  }
+  
+  .definition {
+    order: 2;
+  }
+
+  .grid-header {
+    display: none;
+  }
+}
