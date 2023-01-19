@@ -2,7 +2,7 @@ import { createSlice, nanoid } from '@reduxjs/toolkit'
 import {
     getCostos, updateCostos,
     deleteCostos, createCostos, listCostos
-} from '../actions/costoActions'
+} from '../actions/CostoActions'
 
 const initialState = {
     loaded: false,
