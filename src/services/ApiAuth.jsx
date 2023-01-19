@@ -7,7 +7,7 @@ const ApiAuth = () => {
     // console.log('token: ' + token);
 
     const api = axios.create({
-        //baseURL: 'http://localhost:8000/api',
+        // baseURL: 'http://localhost:8000/api',
         // baseURL: 'http://18.212.164.242/public/api',
         baseURL: 'api',
         withCredentials: true,
@@ -31,6 +31,21 @@ const ApiAuth = () => {
         return response;
     }, async error => {
         if (error.response) {
+            if (error.response.status === 500) {
+                console.log(error.response)
+                //logOut()
+                return Promise.reject(error)
+            }
+            if (error.response.status === 405) {
+                console.log(error.response)
+                //logOut()
+                return Promise.reject(error)
+            }
+            if (error.response.status === 404) {
+                console.log("Servidor no disponible")
+                //logOut()
+                return Promise.reject(error)
+            }
             if (error.response.status === 401) {
                 console.log("BUUU")
                 //logOut()
@@ -52,6 +67,7 @@ const ApiAuth = () => {
                 //window.location.reload()
                 console.log("error 419 mismatch or expired token")
             }
+
         }
         // else{return Promise.reject(new Error('Server unavailable'));}
         return Promise.reject(error)

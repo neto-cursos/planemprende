@@ -134,18 +134,35 @@ const userSlice = createSlice({
                 // console.log('STATEERROR')
                 if (action.error)
                     // console.log(action);
-                if (action.error.message === 'Request failed with status code 401') {
+                switch(action.error.message){
+                   case 'Request failed with status code 401':
                     state = {
                         ...state, successLogin: false, loading: false,
                         error: action, auth: false,
                         errores: [{ id: nanoid(), msg: 'usuario o password incorrecto' }]
-                    }
-                } else {
-                    state = {
+                    };break;
+                    case 'Request failed with status code 404':state = {
                         ...state, successLogin: false, loading: false,
                         error: action, auth: false,
-                    }
-                }
+                        errores: [{ id: nanoid(), msg: 'Servidor no disponible' }]
+                    };break;
+                    default:state = {
+                        ...state, successLogin: false, loading: false,
+                        error: action, auth: false,
+                    };break;
+                }    
+                // if (action.error.message === 'Request failed with status code 401') {
+                //     state = {
+                //         ...state, successLogin: false, loading: false,
+                //         error: action, auth: false,
+                //         errores: [{ id: nanoid(), msg: 'usuario o password incorrecto' }]
+                //     }
+                // } else {
+                //     state = {
+                //         ...state, successLogin: false, loading: false,
+                //         error: action, auth: false,
+                //     }
+                // }
                 return state;
 
             })

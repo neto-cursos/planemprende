@@ -12,13 +12,16 @@ import revenue_streams from './../../assets/images/revenue_streams.svg';
 import value_propositions from './../../assets/images/value_propositions.svg';
 import DownloadIcon from '@mui/icons-material/Download';
 import { useDispatch, useSelector } from 'react-redux';
+import { listPreguntas } from './../../redux/actions/preguntaActions';
 import { agregarRespuesta, deleteRespuesta, resetRespuesta, resetStateResp } from './../../redux/reducers/respuestaSlice';
+import { listRespuestas, updateRespuestas } from './../../redux/actions/respuesta2Actions';
+import { listCostos } from './../../redux/actions/costoActions';
+import { agregarRespCosto, deleteRespCosto, resetRespCosto, resetStateRespCosto } from './../../redux/reducers/respuestaCostoSlice';
+import { listRespCostos, updateRespCostos } from './../../redux/actions/respuestaCostoActions';
 import ModuleBox from './ModuleBox/ModuleBox';
 import { useParams, useNavigate } from 'react-router-dom';
-import { listRespuestas, updateRespuestas } from './../../redux/actions/respuesta2Actions';
 import { createCanvas, getCanvas } from './../../redux/actions/CanvaActions';
 import { setEmpr_id, resetEstado } from './../../redux/reducers/canvasSlice';
-import { listPreguntas } from './../../redux/actions/preguntaActions';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -61,6 +64,12 @@ const Canvas = ({ }) => {
     const respuestas = useSelector(state => state.respuestas.respuestas);
     const preguntas = useSelector(state => state.preguntas);
     const respuestasAsist = useSelector(state => state.respuestasAsistidas);
+    /**Loading data from costos and respcostos*/
+    const { stateRespCosto } = useSelector(state => state.respuestasCostos);
+    const respuestasCostos = useSelector(state => state.respuestasCostos.respCostos);
+    const costos = useSelector(state => state.costos);
+    
+    /**end loading data from costos and respcostos */
     //show notification when success of failing
     const [showNotif, setShowNotif] = useState(false);
     //useRef for image
@@ -106,24 +115,27 @@ const Canvas = ({ }) => {
     const onMouseLeave = (id) => {
         setButtonActiveHovering(0);
     }
-    /**
-     * Handle respuesta
-     */
+    /*** Handle respuesta */
     const [idRespuesta, setIdRespuesta] = useState(0);
+    /*** Handle Costo */
+     const [idRespuestaCosto, setIdRespuestaCosto] = useState(0);
     const [sendAction, setSendAction] = useState(false);
 
     const handleModulo = (number) => {
         setOpenp(true);
         setNumeModulo(number);
     }
-    const handleEdit = (id, moduloDB) => {
-        setIdRespuesta(id);
+    const handleEdit = (id, moduloDB,costo=false) => {
         setNumeModulo(moduloDB);
+        if(moduloDB===9&&costo===true){setIdRespuestaCosto(id)}
+        else{setIdRespuesta(id);}
         setOpenp(true);
     }
-    const handleDelete = (id) => {
+    const handleDelete = (id,costo=false) => {
         // console.log(id);
-        dispatch(deleteRespuesta(id));
+        if(costo===true){
+        dispatch(deleteRespCosto(id));}
+        else{dispatch(deleteRespuesta(id))}
     }
     const updateTable = () => {
         //is not necessary to JSON.stringify since Axios takes charge of that
@@ -151,16 +163,8 @@ const Canvas = ({ }) => {
                 case 'updateTable':updateTable();break;
                 default:break;
             }
-            // if (funcName == 'convertToImg')
-            //     convertToImg();
-
-            //console.log(funcName)
-            // const fn = new Function(funcName+'()');
-            // fn();
-            // funcName();
             dispatch(asignFunctionName(''));
         }
-
     }, [funcName]);
 
     useEffect(() => {
@@ -171,17 +175,20 @@ const Canvas = ({ }) => {
         if (canvasSelect.estado === 'loading') {
             if (currentCanvas.current != null)
                 if (currentCanvas.current.empr_id != empr_id)
-                    dispatch(resetRespuesta());
+                    {dispatch(resetRespuesta()); dispatch(resetRespCosto());}
             dispatch(setEmpr_id(empr_id));//this put estado in ready
             if (preguntas.loaded === false)
                 dispatch(listPreguntas());
+            if (costos.loaded === false)
+                dispatch(listCostos());
         }
     }, [canvasSelect.estado])
 
     useEffect(() => {
         //dispatch(resetRespuesta());
         if (canvasSelect.estado === 'loadedCanvasID' && canvasSelect.idState === 'db' && canvasSelect.datos.empr_id == empr_id) {
-            dispatch(listRespuestas({ canv_id: canvasSelect.datos.canv_id }))
+            dispatch(listRespuestas({ canv_id: canvasSelect.datos.canv_id }));
+            dispatch(listRespCostos({ canv_id: canvasSelect.datos.canv_id }))
             if (respuestasAsist.respAsist.length > 0 && respuestasAsist.empr_id == empr_id) {
                 dispatch(agregarRespuesta(respuestasAsist.respAsist));
             }
@@ -194,7 +201,8 @@ const Canvas = ({ }) => {
         // console.log(respuestas.length)
         if (canvasSelect.idState === 'alreadyLoaded' && respuestas.length === 0) {
             // console.log("entro wey")
-            dispatch(listRespuestas({ canv_id: canvasSelect.datos.canv_id }))
+            dispatch(listRespuestas({ canv_id: canvasSelect.datos.canv_id }));
+            dispatch(listRespCostos({ canv_id: canvasSelect.datos.canv_id }));
         }
     }, [canvasSelect.estado, canvasSelect.idState])
 
@@ -206,8 +214,10 @@ const Canvas = ({ }) => {
                     canv_id: canvasSelect.datos.canv_id,
                     resp_id: '',
                 }]))
-            } else
+            } else{
                 dispatch(updateRespuestas((respuestas)));
+                dispatch(updateRespCostos((respuestasCostos)));
+            }
         }
     }, [canvasSelect.idState, sendAction]);
 
@@ -300,8 +310,6 @@ const Canvas = ({ }) => {
                         bgcolor={"bg-canvasBG7dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
                         downlImage={downlImage}
                     />
-
-
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                         handleDelete={handleDelete} handleEdit={handleEdit}
@@ -311,6 +319,8 @@ const Canvas = ({ }) => {
                         nameModulo={"Estructura de costos"}
                         bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
                         downlImage={downlImage}
+                        costos={costos.costos}
+                        respuestasCostos={respuestasCostos}
                     />
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -322,16 +332,17 @@ const Canvas = ({ }) => {
                         downlImage={downlImage}
                     />
 
-
                     <ModalCreateEntry
                         message="Hello Portal World!"
                         isOpen={openp}
-                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0) }}
+                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0);setIdRespuestaCosto(0);}}
                         modulo={numeModulo}
                         idRespuesta={idRespuesta}
+                        idRespuestaCosto={idRespuestaCosto}
                         idCanvas={canvasSelect.datos.canv_id}
                         setIdRespuesta={() => setIdRespuesta(0)}
                         preguntas={preguntas.preguntas}
+                        costos={costos.costos}
                         readySelect={readySelect}
                         setReadySelect={setReadySelect}
                     />
@@ -410,25 +421,31 @@ const Canvas = ({ }) => {
                         imageName={cost_structure} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG8 text-canvas8Txt col-span-1 md:col-span-3"}
                         nameModulo={"Estructura de costos"}
-                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} 
+                        costos={costos.costos}
+                        respuestasCostos={respuestasCostos}
+                        />
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                         handleDelete={handleDelete} handleEdit={handleEdit}
                         handleModulo={handleModulo} moduloNumber={9} moduloDB={5}
                         imageName={revenue_streams} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG9 text-canvas9Txt col-span-1 md:col-span-2"} nameModulo={"Fuente de ingresos"}
-                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        />
 
                     <span className='text-xs p-0 m-0 absolute bottom-0 right-3 italic'>Alexander Osterwalder</span>
                     <ModalCreateEntry
                         message="Hello Portal World!"
                         isOpen={openp}
-                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0) }}
+                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0);setIdRespuestaCosto(0);}}
                         modulo={numeModulo}
                         idRespuesta={idRespuesta}
+                        idRespuestaCosto={idRespuestaCosto}
                         idCanvas={canvasSelect.datos.canv_id}
                         setIdRespuesta={() => setIdRespuesta(0)}
                         preguntas={preguntas.preguntas}
+                        costos={costos.costos}
                         readySelect={readySelect}
                         setReadySelect={setReadySelect}
                     />

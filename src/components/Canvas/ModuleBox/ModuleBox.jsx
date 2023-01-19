@@ -4,13 +4,17 @@ import EditEntry from './../../../assets/icons/editEntry';
 import EraseEntry from './../../../assets/icons/eraseEntry';
 import { nanoid } from 'nanoid';
 
-const ModuleBox = ({respuestas,onMouseEnter,onMouseLeave,handleDelete,handleEdit,handleModulo,moduloNumber,moduloDB,imageName,buttonActiveHovering,classExtra, nameModulo,bgcolor,preguntas,
-downlImage}) => {
+const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handleEdit, handleModulo, moduloNumber, moduloDB, imageName, buttonActiveHovering, classExtra, nameModulo, bgcolor, preguntas,
+    downlImage, costos = null, respuestasCostos = null }) => {
+
+    // console.log("costos")
+    // console.log(costos)
     //console.log("__________preguntas")
     //console.log(preguntas);
-    let pregIdOld=null;
+    let pregIdOld = null;
+    let costoTotal=0;
     // console.log("modulos: ")
-    // console.log(moduloDB)
+    // console.log(moduloDB)s
     // console.log("modulo ")
     // console.log(moduloNumber)
     return (
@@ -19,7 +23,7 @@ downlImage}) => {
                 <div className='flex flex-row pr-2 text-left pb-2 pt-1 pl-1'>
                     <h3 className='w-4/5'>
                         <span className='text-3xl'>{moduloDB}&nbsp;</span>
-                        {nameModulo}
+                        {nameModulo}                        
                     </h3>
                     {/*'icon'*/}
                     <span
@@ -27,8 +31,8 @@ downlImage}) => {
                         onMouseEnter={() => onMouseEnter(moduloNumber)}
                         onMouseLeave={() => onMouseLeave(moduloNumber)}
                     >
-                        {/*<MyLink href="/">*/}
-                        {buttonActiveHovering===moduloNumber? (
+                        {/*<MyLink href="/">*/}                        
+                        {buttonActiveHovering === moduloNumber ? (
                             <img src={plussign} width={44} height={47} alt="agregar" onClick={() => handleModulo(moduloDB)} />
                         ) : (
                             <img src={imageName} width={44} height={47} alt={nameModulo} />
@@ -39,45 +43,91 @@ downlImage}) => {
 
                 </div>
                 <div className='text-left pl-2 text-sm'>
-                    {preguntas!=null&&preguntas.map((pregunta)=>{
-                            pregIdOld=0;
-                            return <>
-                            {                                
-                            pregunta.modu_id == moduloDB&&<>{
-                            respuestas.map((respuesta) => {
-                                                  
-                                if (respuesta.modu_nume == moduloDB && respuesta.preg_id==pregunta.preg_id) {
-                                    pregIdOld=pregIdOld+1;
-                                    return (
-                                    <>{pregIdOld===1?<span key={nanoid()}>{pregunta.preg_text}</span>:''}                                            
-                                        <div key={respuesta.resp_id} className={`pt-1 py-1 ${bgcolor}`}>
-                                            <div className='flex justify-between '>
-                                                <h3 className='hover:text-red-700 cursor-pointer focus:ring-blue-500 text-bluenavish' onClick={() => handleEdit(respuesta.resp_id,moduloDB)}>{respuesta.resp_text}</h3>
-                                                {!downlImage&&<div className='bg-transparent flex text-xs items-center'>
-                                                    <button name="botondel" className='flex' onClick={() => {
-                                                        return handleDelete(respuesta.resp_id)
-                                                    }}><EraseEntry color="redish"></EraseEntry>&nbsp;</button>&nbsp;&nbsp;
-                                                    {/*
+                    {preguntas != null && preguntas.map((pregunta) => {
+                        pregIdOld = 0;
+                        return <>
+                            {
+                                pregunta.modu_id == moduloDB && <>{
+                                    respuestas.map((respuesta) => {
+                                        if (respuesta.modu_nume == moduloDB && respuesta.preg_id == pregunta.preg_id) {
+                                            pregIdOld = pregIdOld + 1;
+                                            return (
+                                                <>{pregIdOld === 1 ? <span key={nanoid()}>{pregunta.preg_text}</span> : ''}
+                                                    <div key={respuesta.resp_id} className={`pt-1 py-1 ${bgcolor}`}>
+                                                        <div className='flex justify-between '>
+                                                            <h3 className='hover:text-red-700 cursor-pointer focus:ring-blue-500 text-bluenavish' onClick={() => handleEdit(respuesta.resp_id, moduloDB)}>{respuesta.resp_text}</h3>
+                                                            {!downlImage && <div className='bg-transparent flex text-xs items-center'>
+                                                                <button name="botondel" className='flex' onClick={() => {
+                                                                    return handleDelete(respuesta.resp_id)
+                                                                }}><EraseEntry color="redish"></EraseEntry>&nbsp;</button>&nbsp;&nbsp;
+                                                                {/*
                                                     <button className='flex' onClick={() => handleEdit(respuesta.resp_id,moduloDB)}>
                                                     <EditEntry color="blue"></EditEntry></button> */}
-                                                </div>}
-                                            </div>
-                                            <div className='flex'>
-                                                <p>{respuesta.resp_desc}</p>
-                                            </div>
-                                        </div>
-                                        </>)
-                                }
-                            })
+                                                            </div>}
+                                                        </div>
+                                                        <div className='flex'>
+                                                            <p>{respuesta.resp_desc}</p>
+                                                        </div>
+                                                    </div>
+                                                </>)
+                                        }
+                                    })
+                                }</>
                             }</>
-                            }</> 
-                        }
+                    }
                     )}
-
-                        
-                    
-                    {}
                 </div>
+                {respuestasCostos!=null&&
+                <div className='text-left pl-2 text-sm'>
+                    {(respuestasCostos.length>0&&costos != null)&& costos.map((pregunta) => {
+                        //console.log(pregunta);
+                        pregIdOld = 0;
+                        costoTotal=0;
+                        return <div className='flex justify-center'><table key={nanoid()} className='w-4/5'>
+                            <thead className="">
+                                <tr>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Actividad</th>
+                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody className='divide-y divide-gray-100'>
+
+                                {
+                                    pregunta.modu_id == moduloDB && <>{
+                                        respuestasCostos.map((respuesta) => {
+                                            if (respuesta.modu_nume == moduloDB && respuesta.cost_id == pregunta.cost_id) {
+                                                pregIdOld = pregIdOld + 1;
+                                                return (<>
+                                                    <tr key={respuesta.resp_cost_id}
+                                                        className={`hover:text-red-700 cursor-pointer focus:ring-blue-500 text-bluenavish ${bgcolor}`}
+                                                    >
+                                                        <td className='p-3 text-sm whitespace-pre-wrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_acti}</td>
+                                                        <td className='p-3 text-sm whitespace-nowrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_monto} Bs <span className='hidden'>{costoTotal+=respuesta.resp_cost_monto}</span></td>
+                                                        <td>
+                                                        <div className='flex justify-between '>
+
+                                                            {!downlImage && <div className='bg-transparent flex text-xs items-center'>
+                                                                <button name="botondel" className='flex' onClick={() => {
+                                                                    return handleDelete(respuesta.resp_cost_id,true)
+                                                                }}><EraseEntry color="redish"></EraseEntry>&nbsp;</button>&nbsp;&nbsp;
+                                                                {/*
+                                                    <button className='flex' onClick={() => handleEdit(respuesta.resp_id,moduloDB)}>
+                                                    <EditEntry color="blue"></EditEntry></button> */}
+                                                            </div>}
+                                                        </div></td>
+                                                        {/* <div className='flex'>
+                                                            <p>{respuesta.resp_desc}</p>
+                                                        </div> */}
+
+                                                    </tr></>)
+                                            }
+                                        })
+                                    }</>
+                                }<tr className={`text-bluenavish`}><td className="p-3 text-sm whitespace-pre-wrap">Total: </td><td className="p-3 text-sm whitespace-pre-wrap">{costoTotal} Bs</td></tr></tbody></table></div>
+                    }
+                    )}
+                </div>}
+
             </div>
         </>
 

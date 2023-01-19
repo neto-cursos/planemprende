@@ -53,26 +53,27 @@ const ListItem = styled("li")`
 
 const opciones = ["Mangoes", "Apples", "Oranges"];
 
-const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
-    idPreg, setIdPreg, idRespuesta, type = "pregunta" }) => {
-    console.log("type")
-    console.log(type);
-    // console.log("idRespuesta");
-    // console.log(idRespuesta);
+const SelectCustomCanvas = ({preguntas,costos, modulo, respuesta,respCosto,idPreg,idCosto, setIdPreg,setIdCosto, idRespuesta,idRespuestaCosto}) => {
+    console.log(preguntas);
+    console.log(costos);
+    const options=[];
+    if(preguntas!=null&&Array.isArray(preguntas))
+    preguntas.map((p)=>{options.push(p);});
+    if(costos!=null&&Array.isArray(costos))
+    costos.map((c)=>{options.push(c)});
+    console.log(options)
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(() => {
-        // console.log("Respuesta");
-        // console.log(respuesta);
-        // console.log("idpreg");
-        // console.log(idPreg);
         if (idRespuesta !== 0 && idPreg !== '') {
-            const pregunta = type === "pregunta" ? options.find(preg => preg.preg_id == idPreg && preg.modu_id == modulo) : type === "costo" ? options.find(preg => preg.cost_id == idPreg && preg.modu_id == modulo) : '';
+            const pregunta = options.find(preg => {
+                if(preg.preg_id) return preg.preg_id == idPreg && preg.modu_id == modulo;
+                else if(preg.cost_id) return preg.cost_id == idCosto && preg.modu_id == modulo;})
             // console.log("pregunta first: ")
             // console.log(pregunta)
             if (pregunta !== null)
                 return {
-                    preg_id: type === "pregunta" ? pregunta.preg_id : (type === "costo" ? pregunta.cost_id : ''),
-                    preg_text: type === "pregunta" ? pregunta.preg_text : (type === "costo" ? pregunta.cost_text : ''),
+                    preg_id: pregunta.preg_id? pregunta.preg_id : pregunta.cost_id? pregunta.cost_id : '',
+                    preg_text: pregunta.preg_text ? pregunta.preg_text : pregunta.cost_text ? pregunta.cost_text : '',
                 };
         }
         else {
@@ -81,8 +82,8 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
             const pregunta = options.find(preg => preg.modu_id == modulo)
             // console.log(pregunta);
             return {
-                preg_id: type === "pregunta" ? pregunta.preg_id : (type === "costo" ? pregunta.cost_id : ''),
-                preg_text: type === "pregunta" ? pregunta.preg_text : (type === "costo" ? pregunta.cost_text : ''),
+                preg_id: pregunta.preg_id? pregunta.preg_id : pregunta.cost_id? pregunta.cost_id : '',
+                preg_text: pregunta.preg_text ? pregunta.preg_text : pregunta.cost_text ? pregunta.cost_text : '',
             };
         }
     });
@@ -98,34 +99,27 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
     };
 
     React.useEffect(() => {
-        // console.log("respuesta: ");
-        // console.log(respuesta);
-        // if (respuesta.preg_id !== '')
-        //     setIsOpen(false);
-
-    }, [respuesta]);
-
-    React.useEffect(() => {
-
+        if(idPreg!=='')
         setIdPreg(selectedOption.preg_id);
+        else if(idCosto!=='')
+        setIdCosto(selectedOption.preg_id);
         setIsOpen(false);
 
     }, [selectedOption])
     return (
-
         <DropDownContainer>
             <DropDownHeader onClick={toggling}>
-                {type==='pregunta'?selectedOption.preg_text || respuesta.preg_text:type==='costo'?selectedOption.preg_text || respuesta.cost_text:''
+                {idPreg!==''?selectedOption.preg_text || respuesta.preg_text:idCosto!==''?selectedOption.preg_text || respCosto.cost_text:''
                 }
             </DropDownHeader>
             {isOpen && (<OutsideAlerter condition={isOpen} setCondition={setIsOpen}>
                 <DropDownListContainer>
                     <DropDownList>
                         {options.map(option => (
-                            option.modu_id == modulo && type==='pregunta'?
+                            option.modu_id == modulo && option.preg_id?
                             <ListItem onClick={onOptionClicked(option.preg_id, option.preg_text)} key={Math.random()}>
                                 {option.preg_text}
-                            </ListItem>:option.modu_id == modulo && type==='costo'?<ListItem onClick={onOptionClicked(option.cost_id, option.cost_text)} key={Math.random()}>
+                            </ListItem>:option.modu_id == modulo && option.cost_id?<ListItem onClick={onOptionClicked(option.cost_id, option.cost_text)} key={Math.random()}>
                                 {option.cost_text}
                             </ListItem>:''
                         ))}
@@ -135,4 +129,4 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
         </DropDownContainer>
     );
 }
-export default SelectCustom;
+export default SelectCustomCanvas;
