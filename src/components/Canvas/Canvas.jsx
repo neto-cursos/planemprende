@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { listPreguntas } from './../../redux/actions/preguntaActions';
 import { agregarRespuesta, deleteRespuesta, resetRespuesta, resetStateResp } from './../../redux/reducers/respuestaSlice';
 import { listRespuestas, updateRespuestas } from './../../redux/actions/respuesta2Actions';
-import { listCostos } from './../../redux/actions/costoActions';
+import { listCostos } from './../../redux/actions/CostoActions';
 import { agregarRespCosto, deleteRespCosto, resetRespCosto, resetStateRespCosto } from './../../redux/reducers/respuestaCostoSlice';
 import { listRespCostos, updateRespCostos } from './../../redux/actions/respuestaCostoActions';
 import ModuleBox from './ModuleBox/ModuleBox';
