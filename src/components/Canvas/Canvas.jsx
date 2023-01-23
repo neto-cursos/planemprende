@@ -33,6 +33,8 @@ import Notifications from '../Notifications';
 import { msgCanvasNotif } from '../../constants/canvasNotifications';
 import { reset as resetRespAsist } from './../../redux/reducers/respuestaAsistSlice';
 import { asignFunctionName } from '../../redux/reducers/menuSlice';
+import { resetUsersPreg } from '../../redux/reducers/userPreguntaSlice';
+import { checkInitUsersPregs, initUsersPregs, listUsersPregs } from '../../redux/actions/userPreguntaActions';
 /**function to adapt to screen size */
 function getWindowSize() {
     const { innerWidth, innerHeight } = window;
@@ -62,13 +64,14 @@ const Canvas = ({ }) => {
     const canvasSelect = useSelector(state => state.canvas);
     const { stateResp } = useSelector(state => state.respuestas);
     const respuestas = useSelector(state => state.respuestas.respuestas);
-    const preguntas = useSelector(state => state.preguntas);
+    //const preguntas = useSelector(state => state.preguntas);
+    const userPregs = useSelector(state => state.usersPregs);
     const respuestasAsist = useSelector(state => state.respuestasAsistidas);
     /**Loading data from costos and respcostos*/
     const { stateRespCosto } = useSelector(state => state.respuestasCostos);
     const respuestasCostos = useSelector(state => state.respuestasCostos.respCostos);
     const costos = useSelector(state => state.costos);
-    
+
     /**end loading data from costos and respcostos */
     //show notification when success of failing
     const [showNotif, setShowNotif] = useState(false);
@@ -118,24 +121,25 @@ const Canvas = ({ }) => {
     /*** Handle respuesta */
     const [idRespuesta, setIdRespuesta] = useState(0);
     /*** Handle Costo */
-     const [idRespuestaCosto, setIdRespuestaCosto] = useState(0);
+    const [idRespuestaCosto, setIdRespuestaCosto] = useState(0);
     const [sendAction, setSendAction] = useState(false);
 
     const handleModulo = (number) => {
         setOpenp(true);
         setNumeModulo(number);
     }
-    const handleEdit = (id, moduloDB,costo=false) => {
+    const handleEdit = (id, moduloDB, costo = false) => {
         setNumeModulo(moduloDB);
-        if(moduloDB===9&&costo===true){setIdRespuestaCosto(id)}
-        else{setIdRespuesta(id);}
+        if (moduloDB === 9 && costo === true) { setIdRespuestaCosto(id) }
+        else { setIdRespuesta(id); }
         setOpenp(true);
     }
-    const handleDelete = (id,costo=false) => {
+    const handleDelete = (id, costo = false) => {
         // console.log(id);
-        if(costo===true){
-        dispatch(deleteRespCosto(id));}
-        else{dispatch(deleteRespuesta(id))}
+        if (costo === true) {
+            dispatch(deleteRespCosto(id));
+        }
+        else { dispatch(deleteRespuesta(id)) }
     }
     const updateTable = () => {
         //is not necessary to JSON.stringify since Axios takes charge of that
@@ -154,19 +158,34 @@ const Canvas = ({ }) => {
             // }
         }
         dispatch(resetEstado());
+        dispatch(resetUsersPreg());
     }, [])
     /**Menu Funcion*/
+
     useEffect(() => {
         if (funcName !== '') {
-            switch(funcName){
-                case 'convertToImg':convertToImg();break;
-                case 'updateTable':updateTable();break;
-                default:break;
+            switch (funcName) {
+                case 'convertToImg': convertToImg(); break;
+                case 'updateTable': updateTable(); break;
+                default: break;
             }
             dispatch(asignFunctionName(''));
         }
     }, [funcName]);
 
+    /**checkInitPregs */
+    useEffect(() => {
+        dispatch(checkInitUsersPregs({ empr_id: empr_id }));
+    }, []); //check if userpregs exists if yes change state to "copied" otherwise is "notinitiated"
+    /**end checkInitPregs */
+
+    useEffect(() => {
+        if (userPregs.estado === 'notinitiated') {
+            dispatch(initUsersPregs({ empr_id: empr_id }));
+        }else if(userPregs.estado==='copied'){
+            dispatch(listUsersPregs({ empr_id: empr_id }));
+        }
+    }, [userPregs.estado]);
     useEffect(() => {
         if (canvasSelect.estado === 'ready') {
             dispatch(getCanvas({ empr_id: empr_id }));
@@ -174,21 +193,27 @@ const Canvas = ({ }) => {
         }
         if (canvasSelect.estado === 'loading') {
             if (currentCanvas.current != null)
-                if (currentCanvas.current.empr_id != empr_id)
-                    {dispatch(resetRespuesta()); dispatch(resetRespCosto());}
+                if (currentCanvas.current.empr_id != empr_id) {
+                    dispatch(resetRespuesta()); dispatch(resetRespCosto());
+                    dispatch(resetUsersPreg());
+                }
             dispatch(setEmpr_id(empr_id));//this put estado in ready
-            if (preguntas.loaded === false)
-                dispatch(listPreguntas());
+            // if (preguntas.loaded === false)
+            //     dispatch(listPreguntas());
             if (costos.loaded === false)
                 dispatch(listCostos());
+            // if (userPregs.loaded === false)
+            //     dispatch(listUsersPregs({ empr_id: empr_id }));
         }
-    }, [canvasSelect.estado])
+    }, [canvasSelect.estado]);
+
+
 
     useEffect(() => {
         //dispatch(resetRespuesta());
         if (canvasSelect.estado === 'loadedCanvasID' && canvasSelect.idState === 'db' && canvasSelect.datos.empr_id == empr_id) {
             dispatch(listRespuestas({ canv_id: canvasSelect.datos.canv_id }));
-            dispatch(listRespCostos({ canv_id: canvasSelect.datos.canv_id }))
+            dispatch(listRespCostos({ canv_id: canvasSelect.datos.canv_id }));
             if (respuestasAsist.respAsist.length > 0 && respuestasAsist.empr_id == empr_id) {
                 dispatch(agregarRespuesta(respuestasAsist.respAsist));
             }
@@ -214,7 +239,7 @@ const Canvas = ({ }) => {
                     canv_id: canvasSelect.datos.canv_id,
                     resp_id: '',
                 }]))
-            } else{
+            } else {
                 dispatch(updateRespuestas((respuestas)));
                 dispatch(updateRespCostos((respuestasCostos)));
             }
@@ -229,9 +254,9 @@ const Canvas = ({ }) => {
             return setSendAction(false);
         }
     }, [stateResp]);
-
+    // canvasSelect.datos.canv_id !== "" && preguntas.preguntas.length > 0 && <>
     return (
-        canvasSelect.datos.canv_id !== "" && preguntas.preguntas.length > 0 && <>
+        canvasSelect.datos.canv_id !== "" && userPregs.usrPregs.length > 0 && <>
             {showNotif && <Notifications msgNotif={msgCanvasNotif[0]} showNotif={showNotif} setShowNotif={setShowNotif} severity="info" />}
             {downlImage === true ?
                 <div id="micanvas" ref={domEl} className="w-[1280px]  grid gap-1
@@ -243,7 +268,7 @@ const Canvas = ({ }) => {
                         imageName={key_partners} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG1 text-canvas1Txt row-span-2 "}
                         nameModulo={'Asociaciones Claves'}
-                        bgcolor={"bg-canvasBG1dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG1dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -254,7 +279,7 @@ const Canvas = ({ }) => {
                         imageName={key_activities} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG2 text-canvas2Txt"}
                         nameModulo={"Actividades Claves"}
-                        bgcolor={"bg-canvasBG2dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG2dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -265,7 +290,7 @@ const Canvas = ({ }) => {
                         imageName={value_propositions} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG3 text-canvas3Txt row-span-2"}
                         nameModulo={"Propuesta de valor"}
-                        bgcolor={"bg-canvasBG3dark  rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG3dark  rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -276,7 +301,7 @@ const Canvas = ({ }) => {
                         imageName={customer_relationships} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG4 text-canvas4Txt"}
                         nameModulo={"Relación con los clientes"}
-                        bgcolor={"bg-canvasBG4dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG4dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -286,7 +311,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={5} moduloDB={1}
                         imageName={customer_segments} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG5 text-canvas5Txt row-span-2"} nameModulo={"Segmento De Mercado"}
-                        bgcolor={"bg-canvasBG5dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG5dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -296,7 +321,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={6} moduloDB={6}
                         imageName={key_resources} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG6 text-canvas6Txt "} nameModulo={"Recursos Claves"}
-                        bgcolor={"bg-canvasBG6dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG6dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
@@ -307,7 +332,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={7} moduloDB={3}
                         imageName={channel} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG7 text-canvas7Txt"} nameModulo={"Canales"}
-                        bgcolor={"bg-canvasBG7dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG7dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
                     <ModuleBox respuestas={respuestas}
@@ -317,7 +342,7 @@ const Canvas = ({ }) => {
                         imageName={cost_structure} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG8 text-canvas8Txt col-span-3"}
                         nameModulo={"Estructura de costos"}
-                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                         costos={costos.costos}
                         respuestasCostos={respuestasCostos}
@@ -328,20 +353,20 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={9} moduloDB={5}
                         imageName={revenue_streams} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG9 text-canvas9Txt col-span-2"} nameModulo={"Fuente de ingresos"}
-                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         downlImage={downlImage}
                     />
 
                     <ModalCreateEntry
                         message="Hello Portal World!"
                         isOpen={openp}
-                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0);setIdRespuestaCosto(0);}}
+                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0); setIdRespuestaCosto(0); }}
                         modulo={numeModulo}
                         idRespuesta={idRespuesta}
                         idRespuestaCosto={idRespuestaCosto}
                         idCanvas={canvasSelect.datos.canv_id}
                         setIdRespuesta={() => setIdRespuesta(0)}
-                        preguntas={preguntas.preguntas}
+                        preguntas={userPregs.usrPregs}
                         costos={costos.costos}
                         readySelect={readySelect}
                         setReadySelect={setReadySelect}
@@ -358,7 +383,7 @@ const Canvas = ({ }) => {
                         imageName={key_partners} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG1 text-canvas1Txt row-span-1 md:row-span-2 "}
                         nameModulo={'Asociaciones Claves'}
-                        bgcolor={"bg-canvasBG1dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
+                        bgcolor={"bg-canvasBG1dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                     />
 
                     <ModuleBox respuestas={respuestas}
@@ -368,7 +393,7 @@ const Canvas = ({ }) => {
                         imageName={key_activities} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG2 text-canvas2Txt"}
                         nameModulo={"Actividades Claves"}
-                        bgcolor={"bg-canvasBG2dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG2dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -377,7 +402,7 @@ const Canvas = ({ }) => {
                         imageName={value_propositions} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG3 text-canvas3Txt row-span-1 md:row-span-2"}
                         nameModulo={"Propuesta de valor"}
-                        bgcolor={"bg-canvasBG3dark  rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG3dark  rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -386,7 +411,7 @@ const Canvas = ({ }) => {
                         imageName={customer_relationships} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG4 text-canvas4Txt"}
                         nameModulo={"Relación con los clientes"}
-                        bgcolor={"bg-canvasBG4dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG4dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -394,7 +419,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={5} moduloDB={1}
                         imageName={customer_segments} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG5 text-canvas5Txt row-span-1 md:row-span-2"} nameModulo={"Segmento De Mercado"}
-                        bgcolor={"bg-canvasBG5dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG5dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -402,7 +427,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={6} moduloDB={6}
                         imageName={key_resources} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG6 text-canvas6Txt "} nameModulo={"Recursos Claves"}
-                        bgcolor={"bg-canvasBG6dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG6dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
 
                     <ModuleBox respuestas={respuestas}
@@ -411,7 +436,7 @@ const Canvas = ({ }) => {
                         handleModulo={handleModulo} moduloNumber={7} moduloDB={3}
                         imageName={channel} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG7 text-canvas7Txt"} nameModulo={"Canales"}
-                        bgcolor={"bg-canvasBG7dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} />
+                        bgcolor={"bg-canvasBG7dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs} />
 
 
                     <ModuleBox respuestas={respuestas}
@@ -421,30 +446,30 @@ const Canvas = ({ }) => {
                         imageName={cost_structure} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG8 text-canvas8Txt col-span-1 md:col-span-3"}
                         nameModulo={"Estructura de costos"}
-                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas} 
+                        bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         costos={costos.costos}
                         respuestasCostos={respuestasCostos}
-                        />
+                    />
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                         handleDelete={handleDelete} handleEdit={handleEdit}
                         handleModulo={handleModulo} moduloNumber={9} moduloDB={5}
                         imageName={revenue_streams} buttonActiveHovering={buttonActiveHovering}
                         classExtra={"bg-canvasBG9 text-canvas9Txt col-span-1 md:col-span-2"} nameModulo={"Fuente de ingresos"}
-                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={preguntas.preguntas}
-                        />
+                        bgcolor={"bg-canvasBG9dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
+                    />
 
                     <span className='text-xs p-0 m-0 absolute bottom-0 right-3 italic'>Alexander Osterwalder</span>
                     <ModalCreateEntry
                         message="Hello Portal World!"
                         isOpen={openp}
-                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0);setIdRespuestaCosto(0);}}
+                        onClose={() => { setOpenp(false); setReadySelect(false); setIdRespuesta(0); setIdRespuestaCosto(0); }}
                         modulo={numeModulo}
                         idRespuesta={idRespuesta}
                         idRespuestaCosto={idRespuestaCosto}
                         idCanvas={canvasSelect.datos.canv_id}
                         setIdRespuesta={() => setIdRespuesta(0)}
-                        preguntas={preguntas.preguntas}
+                        preguntas={userPregs.usrPregs}
                         costos={costos.costos}
                         readySelect={readySelect}
                         setReadySelect={setReadySelect}

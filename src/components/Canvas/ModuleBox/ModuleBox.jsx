@@ -9,8 +9,8 @@ const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handl
 
     // console.log("costos")
     // console.log(costos)
-    //console.log("__________preguntas")
-    //console.log(preguntas);
+    // console.log("__________preguntas")
+    // console.log(preguntas);
     let pregIdOld = null;
     let costoTotal=0;
     // console.log("modulos: ")
@@ -49,10 +49,10 @@ const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handl
                             {
                                 pregunta.modu_id == moduloDB && <>{
                                     respuestas.map((respuesta) => {
-                                        if (respuesta.modu_nume == moduloDB && respuesta.preg_id == pregunta.preg_id) {
+                                        if (respuesta.modu_nume == moduloDB && respuesta.preg_id == pregunta.usr_preg_id) {
                                             pregIdOld = pregIdOld + 1;
                                             return (
-                                                <>{pregIdOld === 1 ? <span key={nanoid()}>{pregunta.preg_text}</span> : ''}
+                                                <>{pregIdOld === 1 ? <span key={nanoid()}>{pregunta.usr_preg_text}</span> : ''}
                                                     <div key={respuesta.resp_id} className={`pt-1 py-1 ${bgcolor}`}>
                                                         <div className='flex justify-between '>
                                                             <h3 className='hover:text-red-700 cursor-pointer focus:ring-blue-500 text-bluenavish' onClick={() => handleEdit(respuesta.resp_id, moduloDB)}>{respuesta.resp_text}</h3>

@@ -66,13 +66,13 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
         // console.log("idpreg");
         // console.log(idPreg);
         if (idRespuesta !== 0 && idPreg !== '') {
-            const pregunta = type === "pregunta" ? options.find(preg => preg.preg_id == idPreg && preg.modu_id == modulo) : type === "costo" ? options.find(preg => preg.cost_id == idPreg && preg.modu_id == modulo) : '';
+            const pregunta = type === "pregunta" ? options.find(preg => preg.usr_preg_id == idPreg && preg.modu_id == modulo) : type === "costo" ? options.find(preg => preg.cost_id == idPreg && preg.modu_id == modulo) : '';
             // console.log("pregunta first: ")
             // console.log(pregunta)
             if (pregunta !== null)
                 return {
-                    preg_id: type === "pregunta" ? pregunta.preg_id : (type === "costo" ? pregunta.cost_id : ''),
-                    preg_text: type === "pregunta" ? pregunta.preg_text : (type === "costo" ? pregunta.cost_text : ''),
+                    preg_id: type === "pregunta" ? pregunta.usr_preg_id : (type === "costo" ? pregunta.cost_id : ''),
+                    preg_text: type === "pregunta" ? pregunta.usr_preg_text : (type === "costo" ? pregunta.cost_text : ''),
                 };
         }
         else {
@@ -81,8 +81,8 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
             const pregunta = options.find(preg => preg.modu_id == modulo)
             // console.log(pregunta);
             return {
-                preg_id: type === "pregunta" ? pregunta.preg_id : (type === "costo" ? pregunta.cost_id : ''),
-                preg_text: type === "pregunta" ? pregunta.preg_text : (type === "costo" ? pregunta.cost_text : ''),
+                preg_id: type === "pregunta" ? pregunta.usr_preg_id : (type === "costo" ? pregunta.cost_id : ''),
+                preg_text: type === "pregunta" ? pregunta.usr_preg_text : (type === "costo" ? pregunta.cost_text : ''),
             };
         }
     });
@@ -123,8 +123,8 @@ const SelectCustom = ({ options, modulo, respuesta, setRespuesta,
                     <DropDownList>
                         {options.map(option => (
                             option.modu_id == modulo && type==='pregunta'?
-                            <ListItem onClick={onOptionClicked(option.preg_id, option.preg_text)} key={Math.random()}>
-                                {option.preg_text}
+                            <ListItem onClick={onOptionClicked(option.usr_preg_id, option.usr_preg_text)} key={Math.random()}>
+                                {option.usr_preg_text}
                             </ListItem>:option.modu_id == modulo && type==='costo'?<ListItem onClick={onOptionClicked(option.cost_id, option.cost_text)} key={Math.random()}>
                                 {option.cost_text}
                             </ListItem>:''

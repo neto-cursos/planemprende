@@ -32,21 +32,23 @@ const ApiAuth = () => {
     }, async error => {
         if (error.response) {
             if (error.response.status === 500) {
-                console.log(error.response)
+                console.log(error.response);
                 //logOut()
                 return Promise.reject(error)
             }
             if (error.response.status === 405) {
-                console.log(error.response)
+                console.log(error.response);
                 //logOut()
                 return Promise.reject(error)
             }
             if (error.response.status === 404) {
+                console.log(error.response);
                 console.log("Servidor no disponible")
                 //logOut()
                 return Promise.reject(error)
             }
             if (error.response.status === 401) {
+                console.log(error.response);
                 console.log("BUUU")
                 //logOut()
                 return Promise.reject(error)
@@ -67,9 +69,11 @@ const ApiAuth = () => {
                 //window.location.reload()
                 console.log("error 419 mismatch or expired token")
             }
+            console.log("errorResponse entro");
 
         }
         // else{return Promise.reject(new Error('Server unavailable'));}
+        // console.log(error);
         return Promise.reject(error)
     })
     return (api);

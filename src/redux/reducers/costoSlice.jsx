@@ -108,20 +108,20 @@ export const costoSlice = createSlice({
             })
             // check if user is loggedIn
             .addCase(deleteCostos.pending, (state, action) => {
-                console.log("Deleterespuestas Pending");
+                console.log("DeleteCostos Pending");
             })
             .addCase(deleteCostos.fulfilled, (state, { payload }) => {
-                console.log("Deleterespuestas FullFilled");
+                console.log("DeleteCostos FullFilled");
 
             })
             .addCase(deleteCostos.rejected, (state, { payload }) => {
-                console.log("Deleterespuestas Rejected");
+                console.log("DeleteCostos Rejected");
             })
             .addCase(listCostos.pending, (state, action) => {
-                console.log("Deleterespuestas Pending");
+                console.log("ListCostos Pending");
             })
             .addCase(listCostos.fulfilled, (state, action) => {
-                console.log("Deleterespuestas FullFilled");
+                console.log("ListCostos FullFilled");
                 state.costos.length = 0;
                 action.payload.map(data => {
                     if (!state.costos.find(costo => costo.cost_id === data.cost_id))
@@ -131,7 +131,7 @@ export const costoSlice = createSlice({
                 state.byModule = false;
             })
             .addCase(listCostos.rejected, (state, { payload }) => {
-                console.log("Deleterespuestas Rejected");
+                console.log("ListCostos Rejected");
             })
     },
 })

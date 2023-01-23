@@ -6,6 +6,7 @@ const initialState ={
     loaded:false,
     preguntas:[],
     byModule:false,
+    actualModule:0,
 }
 export const preguntaSlice = createSlice({
     name: 'preguntas',
@@ -73,6 +74,7 @@ export const preguntaSlice = createSlice({
                 });
                 state.loaded=true;
                 state.byModule=true;
+                state.actualModule=action.payload[0].modu_id;
             })
             .addCase(getPreguntas.rejected, (state, action) => {
                 console.log("Getrespuestas Rejected");
@@ -99,20 +101,20 @@ export const preguntaSlice = createSlice({
             })
             // check if user is loggedIn
             .addCase(deletePreguntas.pending, (state, action) => {
-                console.log("Deleterespuestas Pending");
+                console.log("DeletePreguntas Pending");
             })
             .addCase(deletePreguntas.fulfilled, (state, { payload }) => {
-                console.log("Deleterespuestas FullFilled");
+                console.log("DeletePreguntas FullFilled");
 
             })
             .addCase(deletePreguntas.rejected, (state, { payload }) => {
-                console.log("Deleterespuestas Rejected");
+                console.log("DeletePreguntas Rejected");
             })
             .addCase(listPreguntas.pending, (state, action) => {
-                console.log("Deleterespuestas Pending");
+                console.log("ListPreguntas Pending");
             })
             .addCase(listPreguntas.fulfilled, (state, action) => {
-                console.log("Deleterespuestas FullFilled");
+                console.log("ListPreguntasFullFilled");
                 state.preguntas.length=0;
                 action.payload.map(data => {
                     if(!state.preguntas.find(pregunta => pregunta.preg_id === data.preg_id))
@@ -122,7 +124,7 @@ export const preguntaSlice = createSlice({
                 state.byModule=false;
             })
             .addCase(listPreguntas.rejected, (state, { payload }) => {
-                console.log("Deleterespuestas Rejected");
+                console.log("ListPreguntas Rejected");
             })
     },
 })

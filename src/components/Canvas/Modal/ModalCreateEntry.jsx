@@ -183,7 +183,7 @@ const ModalCreateEntry = ({ message, isOpen, onClose, modulo, idRespuesta, setId
                     </div>
 
                     {(costos !== null && (idRespuestaCosto != 0||(idRespuestaCosto===0 &&modulo===9&&idRespuesta===0))) ?
-                        <CostoRespuesta onClose={onClose} modulo={modulo} idRespuesta={idRespuestaCosto} costos={costos} readySelect={readySelect} inputActividad={inputActividad} inputMonto={inputMonto}handleSubmit={handleSubmitCosto}respuestasCostos={respuestasCostos} idCosto={idCosto} setIdCosto={setIdCosto} /> : <PreguntaRespuesta onClose={onClose} modulo={modulo} idRespuesta={idRespuesta} preguntas={preguntas} readySelect={readySelect} inputTitle={inputTitle} handleSubmit={handleSubmit} respuesta={respuesta} idPreg={idPreg} setIdPreg={setIdPreg} />
+                        <CostoRespuesta onClose={onClose} modulo={modulo} idRespuestaCosto={idRespuestaCosto} costos={costos} readySelect={readySelect} inputActividad={inputActividad} inputMonto={inputMonto}handleSubmit={handleSubmitCosto}respuestasCostos={respuestasCostos} idCosto={idCosto} setIdCosto={setIdCosto} /> : <PreguntaRespuesta onClose={onClose} modulo={modulo} idRespuesta={idRespuesta} preguntas={preguntas} readySelect={readySelect} inputTitle={inputTitle} handleSubmit={handleSubmit} respuesta={respuesta} idPreg={idPreg} setIdPreg={setIdPreg} />
                     }
                 </div>
             </div>

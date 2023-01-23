@@ -10,7 +10,7 @@ import cronogramasReducer from './reducers/cronogramaSlice';
 import menuReducer from './reducers/menuSlice';
 import costoReducer from './reducers/costoSlice';
 import respCostoReducer from './reducers/respuestaCostoSlice';
-
+import usersPregReducer from "./reducers/userPreguntaSlice";
 export const Store = configureStore({
     reducer:{
         emprendimientos:emprendReducer,
@@ -24,6 +24,7 @@ export const Store = configureStore({
         menus:menuReducer,
         costos:costoReducer,
         respuestasCostos:respCostoReducer,
+        usersPregs:usersPregReducer,
     }
     
 })

@@ -56,6 +56,10 @@ export const respuestaAsistSlice = createSlice({
         resetRespuestaAsistida: (state, action) => {
             state.respAsist.length = 0;
             return state;
+        },
+        changeResp2Send:(state,action)=>{
+            state.respAsist=action.payload;
+            return state;
         }
     },
     extraReducers(builder) {
@@ -103,5 +107,5 @@ export const respuestaAsistSlice = createSlice({
             })
     },
 })
-export const { addRespuesta, deleteRespuesta, updateRespuesta, resetRespuestaAsistida, reset,respAsistChgEmprId } = respuestaAsistSlice.actions
+export const { addRespuesta, deleteRespuesta, updateRespuesta, resetRespuestaAsistida, reset,respAsistChgEmprId,changeResp2Send } = respuestaAsistSlice.actions
 export default respuestaAsistSlice.reducer;

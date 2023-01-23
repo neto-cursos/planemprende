@@ -9,6 +9,7 @@ import ToolTip from '../ToolTip/ToolTip';
 import {helpRubro,helpTipo,helpNombreEmpr} from './../../constants/helpToolTip';
 import { nanoIdNumbers } from '../../utils/nanoIdCustom';
 import { rubros } from '../../constants/rubros';
+import { initUsersPregs } from '../../redux/actions/userPreguntaActions';
 const fields = emprendimientoFields;
 let fieldsState = {};
 
@@ -25,8 +26,7 @@ const EmprendimientoForm = () => {
         // console.log(e.target.name + ":" + e.target.value)
     }
 
-    useLayoutEffect(() => {
-        
+    useLayoutEffect(() => {        
         dispatch(resetEmprendActiva());
     }, []);
     useEffect(()=>{
@@ -34,6 +34,7 @@ const EmprendimientoForm = () => {
         formInput.current.id=aux1.user_id;
     },[])
     const emprendimientos = useSelector(state => state.emprendimientos);
+    const usersPregs=useSelector(state=>state.usersPregs);
     const crearEmpr =  (e) => {
         e.preventDefault();
         
@@ -52,6 +53,15 @@ const EmprendimientoForm = () => {
             setNavigate(true);
         }
     }, [emprendimientos]);
+
+    useEffect(() => {
+        console.log(emprendimientos.status);
+        console.log(emprendimientos.operation);
+        if(emprendimientos.status==='fulfilled'&&emprendimientos.operation=='created'){
+            
+            dispatch(initUsersPregs({empr_id:emprendimientos.empr_id_activo}));
+        }
+    }, [emprendimientos.status]);
     
     if (navigate) {
         //console.log(axios.defaults.headers.common['Authorization'])
@@ -78,7 +88,6 @@ const EmprendimientoForm = () => {
                             isRequired={field.isRequired}
                             placeholder={emprIdOpt.current}
                         />
-
                     )
                 }
                 <span className='flex flex-row py-2'><label className=''>Rubro:</label>

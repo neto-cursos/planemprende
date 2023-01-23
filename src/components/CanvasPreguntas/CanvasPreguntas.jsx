@@ -5,8 +5,8 @@ import AddEntry from './../../assets/icons/addEntry';
 import EditEntry from './../../assets/icons/editEntry';
 import EraseEntry from './../../assets/icons/eraseEntry';
 import { getPreguntas } from './../../redux/actions/preguntaActions';
-import {addRespuesta, resetRespuestaAsistida,deleteRespuesta, respAsistChgEmprId} 
-from './../../redux/reducers/respuestaAsistSlice';
+import { addRespuesta, resetRespuestaAsistida, deleteRespuesta, respAsistChgEmprId, changeResp2Send }
+    from './../../redux/reducers/respuestaAsistSlice';
 import { agregarRespuesta } from './../../redux/reducers/respuestaSlice';
 import { nanoid } from '@reduxjs/toolkit'
 import { getSugerencias } from './../../redux/actions/sugerenciaActions';
@@ -30,6 +30,8 @@ import ToolTipBasic from '../ToolTip/ToolTipBasic';
 import VideoModal from '../VideoPlayer/VideoModal';
 import { Modal } from '@mui/material';
 import { asignFunctionName } from '../../redux/reducers/menuSlice';
+import { listUsersPregs } from '../../redux/actions/userPreguntaActions';
+
 function getWindowSize() {
     const { innerWidth, innerHeight } = window;
     return { innerWidth, innerHeight };
@@ -48,11 +50,11 @@ const ModelCanvasPreguntas = () => {
     }, []);
     //funcion name of the menu for mobile
     const { funcName } = useSelector(state => state.menus);
-    
-    const videoDatos=useRef('');
-    
-    const [isOpen,setIsOpen]=useState(false);
-    const handleClose=()=>{
+
+    const videoDatos = useRef('');
+
+    const [isOpen, setIsOpen] = useState(false);
+    const handleClose = () => {
         setIsOpen(false);
     }
     const [yt, setYt] = useState(false);
@@ -62,9 +64,18 @@ const ModelCanvasPreguntas = () => {
 
     const { empr_id, user_id, modu_nume, bmc_type = '' } = useParams();
 
+    /**userPregs */
+    const userPregs = useSelector(state => state.usersPregs);
+    useEffect(() => {
+        if (userPregs.usrPregs.length == 0) {
+            dispatch(listUsersPregs({ empr_id: empr_id }));
+        }
+    }, [userPregs.usrPregs]);
+    /**End userPregs */
+
     // console.log("modu_nume:", modu_nume);
     const modu_nomb2 = modulosConDesc.find((nodo => nodo.modu_id == modu_nume))
-    
+
     const input1 = useRef(null);
     const input2 = useRef(null);
     const input3 = useRef(null);
@@ -78,6 +89,7 @@ const ModelCanvasPreguntas = () => {
 
     const [txtActive, setTxtActive] = useState(0);
     const preguntas = useSelector(state => state.preguntas);
+    const { estado } = useSelector(state => state.respuestasAsistidas);
     const respuestas = useSelector(state => state.respuestasAsistidas.respAsist);
     const canvasSelect = useSelector(state => state.canvas);
     const sugerencias = useSelector(state => state.sugerencias);
@@ -85,9 +97,9 @@ const ModelCanvasPreguntas = () => {
     const dispatch = useDispatch();
     React.useEffect(() => {
         if (funcName !== '') {
-            switch(funcName){
-                case 'saveAnswers':saveAnswers();break;
-                default:break;
+            switch (funcName) {
+                case 'saveAnswers': saveAnswers(); break;
+                default: break;
             }
             dispatch(asignFunctionName(''));
         }
@@ -171,6 +183,16 @@ const ModelCanvasPreguntas = () => {
         e.persist();
         setFormInput4(prevState => ({ ...prevState, resp_text: input4.current.value }))
     }
+    const comparePregsId = (p_id) => {
+        console.log(p_id);
+        const pregunta = userPregs.usrPregs.find(preg => preg.usr_repl_preg_id == p_id)
+        console.log(pregunta);
+        if (pregunta != null)
+            return pregunta.usr_preg_id;
+        else
+            return p_id;
+
+    };
     const addResponse = (p_id) => {
         setFormInput(prevState => ({ ...prevState, resp_id: nanoid(), preg_id: p_id, modu_nume: modu_nume, resp_text: input1.current.value }))
         //setIsReady(true);
@@ -215,7 +237,7 @@ const ModelCanvasPreguntas = () => {
     useEffect(() => {
         dispatch(respAsistChgEmprId(empr_id));
         dispatch(resetRespuestaAsistida());
-        if (preguntas.loaded === false && preguntas.byModule === false) {
+        if (preguntas.loaded === false && preguntas.byModule === false||(preguntas.actualModule!=modu_nume)) {
             dispatch(getPreguntas({ modu_nume: modu_nume }))
         }
         dispatch(getSugerencias({ modu_nume: modu_nume }));
@@ -235,11 +257,20 @@ const ModelCanvasPreguntas = () => {
     };
 
     const saveAnswers = () => {
-        // console.log("handle submit SALIDA de datos ")
-        // console.log(respuestas);
-        dispatch(agregarRespuesta(respuestas));
+        const respAux = respuestas.map((r) => {
+            return {...r,preg_id:comparePregsId(r.preg_id)};
+        });
+        console.log(respAux);
+        dispatch(changeResp2Send(respAux));
+        dispatch(agregarRespuesta(respAux));
         setRedirect(true);
     };
+    // useEffect(() => {
+    //     if (estado === 'changepregid') {
+    //         dispatch(agregarRespuesta(respuestas));
+    //         setRedirect(true);
+    //     }
+    // }, [estado]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -328,9 +359,9 @@ const ModelCanvasPreguntas = () => {
                                             {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
                                                 <ToolTipBasic tooltip={suge.suge_text}>
                                                     {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
-                                                        <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={()=>{videoDatos.current=suge.suge_link;setIsOpen(true)}}>
-                                                            <YouTubeIcon></YouTubeIcon>
-                                                        </button>
+                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={() => { videoDatos.current = suge.suge_link; setIsOpen(true) }}>
+                                                        <YouTubeIcon></YouTubeIcon>
+                                                    </button>
                                                     {/* </Link> */}
                                                 </ToolTipBasic>
                                             </>
@@ -366,9 +397,9 @@ const ModelCanvasPreguntas = () => {
                                             {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
                                                 <ToolTipBasic tooltip={suge.suge_text}>
                                                     {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
-                                                        <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={()=>{videoDatos.current=suge.suge_link;setIsOpen(true)}}>
-                                                            <YouTubeIcon></YouTubeIcon>
-                                                        </button>
+                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={() => { videoDatos.current = suge.suge_link; setIsOpen(true) }}>
+                                                        <YouTubeIcon></YouTubeIcon>
+                                                    </button>
                                                     {/* </Link> */}
                                                 </ToolTipBasic>
                                             </>
@@ -379,79 +410,79 @@ const ModelCanvasPreguntas = () => {
                             }
                             {c2 === 3 &&
                                 <div className="">
-                                <div className='col-span-2 row-span-2'>
-                                    <div className="flex items-center border-b border-teal-500 py-2">
-                                        <textarea id="respuesta" key={nanoid()} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="su respuesta" aria-label="Respuesta" name="resp_text" ref={input3} />
-                                        <button className="flex bg-sky-500 hover:bg-sky-700 border-sky-500 hover:border-sky-700 text-sm border-1 text-white rounded" type="button" onClick={() => addResponse3(pregunta.preg_id)}>
-                                            <AddEntry></AddEntry>
-                                        </button>
-                                    </div>{updateAuxInputs({ ...auxInput, input3: pregunta.preg_id })}
-
-                                </div>
-
-                                {sugerencias.map((suge) => {
-                                    return <>
-                                        {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Ejemplo' && (<>
-                                            <button className="h-4 text-[0.5rem] bg-blue-500 hover:bg-blue-700 text-white mx-[0.1rem] my-0 py-0 px-0 rounded" key={suge.suge_id} onClick={() => updateFormInput(suge.suge_text, suge.preg_id)}>
-                                                {suge.suge_text}
+                                    <div className='col-span-2 row-span-2'>
+                                        <div className="flex items-center border-b border-teal-500 py-2">
+                                            <textarea id="respuesta" key={nanoid()} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="su respuesta" aria-label="Respuesta" name="resp_text" ref={input3} />
+                                            <button className="flex bg-sky-500 hover:bg-sky-700 border-sky-500 hover:border-sky-700 text-sm border-1 text-white rounded" type="button" onClick={() => addResponse3(pregunta.preg_id)}>
+                                                <AddEntry></AddEntry>
                                             </button>
-                                        </>))}
-                                    </>
-                                })}
-                                {sugerencias.map((suge) => {
-                                    return <>
+                                        </div>{updateAuxInputs({ ...auxInput, input3: pregunta.preg_id })}
 
-                                        {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
-                                            <ToolTipBasic tooltip={suge.suge_text}>
-                                                {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
-                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={()=>{videoDatos.current=suge.suge_link;setIsOpen(true)}}>
+                                    </div>
+
+                                    {sugerencias.map((suge) => {
+                                        return <>
+                                            {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Ejemplo' && (<>
+                                                <button className="h-4 text-[0.5rem] bg-blue-500 hover:bg-blue-700 text-white mx-[0.1rem] my-0 py-0 px-0 rounded" key={suge.suge_id} onClick={() => updateFormInput(suge.suge_text, suge.preg_id)}>
+                                                    {suge.suge_text}
+                                                </button>
+                                            </>))}
+                                        </>
+                                    })}
+                                    {sugerencias.map((suge) => {
+                                        return <>
+
+                                            {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
+                                                <ToolTipBasic tooltip={suge.suge_text}>
+                                                    {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
+                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={() => { videoDatos.current = suge.suge_link; setIsOpen(true) }}>
                                                         <YouTubeIcon></YouTubeIcon>
                                                     </button>
-                                                {/* </Link> */}
-                                            </ToolTipBasic>
+                                                    {/* </Link> */}
+                                                </ToolTipBasic>
+                                            </>
+                                            ))}
                                         </>
-                                        ))}
-                                    </>
-                                })}
-                            </div>
+                                    })}
+                                </div>
                             }
                             {c2 === 4 &&
                                 <div className="">
-                                <div className='col-span-2 row-span-2'>
-                                    <div className="flex items-center border-b border-teal-500 py-2">
-                                        <textarea id="respuesta" key={nanoid()} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="su respuesta" aria-label="Respuesta" name="resp_text" ref={input4} />
-                                        <button className="flex bg-sky-500 hover:bg-sky-700 border-sky-500 hover:border-sky-700 text-sm border-1 text-white rounded" type="button" onClick={() => addResponse4(pregunta.preg_id)}>
-                                            <AddEntry></AddEntry>
-                                        </button>
-                                    </div>{updateAuxInputs({ ...auxInput, input4: pregunta.preg_id })}
-
-                                </div>
-
-                                {sugerencias.map((suge) => {
-                                    return <>
-                                        {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Ejemplo' && (<>
-                                            <button className="h-4 text-[0.5rem] bg-blue-500 hover:bg-blue-700 text-white mx-[0.1rem] my-0 py-0 px-0 rounded" key={suge.suge_id} onClick={() => updateFormInput(suge.suge_text, suge.preg_id)}>
-                                                {suge.suge_text}
+                                    <div className='col-span-2 row-span-2'>
+                                        <div className="flex items-center border-b border-teal-500 py-2">
+                                            <textarea id="respuesta" key={nanoid()} rows="2" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="su respuesta" aria-label="Respuesta" name="resp_text" ref={input4} />
+                                            <button className="flex bg-sky-500 hover:bg-sky-700 border-sky-500 hover:border-sky-700 text-sm border-1 text-white rounded" type="button" onClick={() => addResponse4(pregunta.preg_id)}>
+                                                <AddEntry></AddEntry>
                                             </button>
-                                        </>))}
-                                    </>
-                                })}
-                                {sugerencias.map((suge) => {
-                                    return <span key={nanoid()}>
+                                        </div>{updateAuxInputs({ ...auxInput, input4: pregunta.preg_id })}
 
-                                        {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
-                                            <ToolTipBasic tooltip={suge.suge_text}>
-                                                {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
-                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={()=>{videoDatos.current=suge.suge_link;setIsOpen(true);}}>
+                                    </div>
+
+                                    {sugerencias.map((suge) => {
+                                        return <>
+                                            {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Ejemplo' && (<>
+                                                <button className="h-4 text-[0.5rem] bg-blue-500 hover:bg-blue-700 text-white mx-[0.1rem] my-0 py-0 px-0 rounded" key={suge.suge_id} onClick={() => updateFormInput(suge.suge_text, suge.preg_id)}>
+                                                    {suge.suge_text}
+                                                </button>
+                                            </>))}
+                                        </>
+                                    })}
+                                    {sugerencias.map((suge) => {
+                                        return <span key={nanoid()}>
+
+                                            {(suge.preg_id == pregunta.preg_id && suge.suge_tipo == 'Video' && (<>
+                                                <ToolTipBasic tooltip={suge.suge_text}>
+                                                    {/* <Link to={`/videoplayer/${suge.suge_id}`}> */}
+                                                    <button className="key={suge.suge_id} text-white p-0 m-0 bg-rojo-dark rounded" onClick={() => { videoDatos.current = suge.suge_link; setIsOpen(true); }}>
                                                         <YouTubeIcon></YouTubeIcon>
                                                     </button>
-                                                {/* </Link> */}
-                                            </ToolTipBasic>
-                                        </>
-                                        ))}
-                                    </span>
-                                })}
-                            </div>
+                                                    {/* </Link> */}
+                                                </ToolTipBasic>
+                                            </>
+                                            ))}
+                                        </span>
+                                    })}
+                                </div>
                             }
 
                         </>
@@ -469,15 +500,15 @@ const ModelCanvasPreguntas = () => {
             {/* {playVideo.play === true && playVideo.id !== null && <ModalVideos playVideo={playVideo} setPlayVideo={setPlayVideo}></ModalVideos>}
             <PreguntasBmc user_id={user_id} modu_nume={modu_nume} bmc_type={bmc_type}></PreguntasBmc> */}
 
-            
-            <Modal
-            open={isOpen}
-            onClose={() => handleClose()}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
 
-        >
-            
+            <Modal
+                open={isOpen}
+                onClose={() => handleClose()}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+
+            >
+
                 <div className='pl-16 pt-32 md:pl-32 lg:pl-64 md:pt-16 text-center'>
                     <div className='text-whitish pl-32 text-2xl cursor-pointer' onClick={handleClose}>X</div>
                     <iframe
@@ -490,13 +521,13 @@ const ModelCanvasPreguntas = () => {
                         allowFullScreen
                         className="pl-2"
                     />
-                
+
                 </div>
-            
 
 
-        </Modal>
-    
+
+            </Modal>
+
 
 
         </>
