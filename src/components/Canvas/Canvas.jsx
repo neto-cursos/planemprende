@@ -35,12 +35,14 @@ import { reset as resetRespAsist } from './../../redux/reducers/respuestaAsistSl
 import { asignFunctionName } from '../../redux/reducers/menuSlice';
 import { resetUsersPreg } from '../../redux/reducers/userPreguntaSlice';
 import { checkInitUsersPregs, initUsersPregs, listUsersPregs } from '../../redux/actions/userPreguntaActions';
+import CheckLeaving from './CheckLeaving';
+
 /**function to adapt to screen size */
 function getWindowSize() {
     const { innerWidth, innerHeight } = window;
     return { innerWidth, innerHeight };
 }
-const Canvas = ({ }) => {
+const Canvas = ({ coin }) => {
     //funcion name of the menu for mobile
     const { funcName } = useSelector(state => state.menus);
     //useState for managin window size
@@ -105,6 +107,10 @@ const Canvas = ({ }) => {
         //navigate("/");
         dispatch(resetEstado());
     }
+    /** check if leaving the page*/
+    const [dirty, setDirty] = useState(false)
+
+    /** end check if leaving the page*/
     /**
      * estados para controlar modals y hoverings
      */
@@ -182,7 +188,7 @@ const Canvas = ({ }) => {
     useEffect(() => {
         if (userPregs.estado === 'notinitiated') {
             dispatch(initUsersPregs({ empr_id: empr_id }));
-        }else if(userPregs.estado==='copied'){
+        } else if (userPregs.estado === 'copied') {
             dispatch(listUsersPregs({ empr_id: empr_id }));
         }
     }, [userPregs.estado]);
@@ -257,6 +263,7 @@ const Canvas = ({ }) => {
     // canvasSelect.datos.canv_id !== "" && preguntas.preguntas.length > 0 && <>
     return (
         canvasSelect.datos.canv_id !== "" && userPregs.usrPregs.length > 0 && <>
+            {/* <CheckLeaving when={dirty} /> */}
             {showNotif && <Notifications msgNotif={msgCanvasNotif[0]} showNotif={showNotif} setShowNotif={setShowNotif} severity="info" />}
             {downlImage === true ?
                 <div id="micanvas" ref={domEl} className="w-[1280px]  grid gap-1
@@ -346,6 +353,7 @@ const Canvas = ({ }) => {
                         downlImage={downlImage}
                         costos={costos.costos}
                         respuestasCostos={respuestasCostos}
+                        coin={coin}
                     />
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -449,6 +457,7 @@ const Canvas = ({ }) => {
                         bgcolor={"bg-canvasBG8dark rounded pl-2 pr-1"} preguntas={userPregs.usrPregs}
                         costos={costos.costos}
                         respuestasCostos={respuestasCostos}
+                        coin={coin}
                     />
                     <ModuleBox respuestas={respuestas}
                         onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
@@ -477,26 +486,32 @@ const Canvas = ({ }) => {
                 </div>}
 
 
-            {windowSize.innerWidth > 640 ?
+            {windowSize.innerWidth > 800 ?
                 <div className='text-center absolute right-5 top-10 z-10 text-lg text-canvas4Txt'>
                     <Fab color="secondary" variant="extended" aria-label="Actualizar Canvas" onClick={() => updateTable()}>
-                        <AddIcon> </AddIcon> <span className="text-xs">Actualizar Canvas</span>
+                        <AddIcon> </AddIcon> <span className="text-xs">Guardar</span>
                     </Fab>
                     <Fab color="primary" variant="extended" aria-label="descargar Imagen" onClick={() => convertToImg()}>
                         <DownloadIcon> </DownloadIcon>
                     </Fab>
-                </div> :
-                <div className='text-center fixed left-4 top-[120px] z-10 text-lg text-canvas4Txt'>
-                    <Fab color="secondary" variant="extended" aria-label="Actualizar Canvas" onClick={() => updateTable()}>
-                        <AddIcon sx={{ fontSize: 20 }}> </AddIcon>
-                    </Fab><br />
-                    <Fab color="primary" variant="extended" aria-label="descargar Imagen" onClick={() => convertToImg()}>
-                        <DownloadIcon sx={{ fontSize: 20 }}> </DownloadIcon>
-                    </Fab>
+                </div> : windowSize.innerWidth > 720 ?
+                    <div className='text-center absolute right-5 top-10 z-10 text-lg text-canvas4Txt'>
+                        <Fab color="secondary" variant="extended" aria-label="Actualizar Canvas" onClick={() => updateTable()}>
+                            <AddIcon> </AddIcon> 
+                        </Fab>
+                        <Fab color="primary" variant="extended" aria-label="descargar Imagen" onClick={() => convertToImg()}>
+                            <DownloadIcon> </DownloadIcon>
+                        </Fab>
+                    </div>
+                    : <div className='text-center fixed left-4 top-[120px] z-10 text-lg text-canvas4Txt'>
+                        <Fab color="secondary" variant="extended" aria-label="Actualizar Canvas" onClick={() => updateTable()}>
+                            <AddIcon sx={{ fontSize: 20 }}> </AddIcon>
+                        </Fab><br />
+                        <Fab color="primary" variant="extended" aria-label="descargar Imagen" onClick={() => convertToImg()}>
+                            <DownloadIcon sx={{ fontSize: 20 }}> </DownloadIcon>
+                        </Fab>
 
-                </div>
-
-
+                    </div>
             }
             {/* <button onClick={() => updateTable()}>
             Actualizar Canvas

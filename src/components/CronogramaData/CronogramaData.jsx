@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
     addCronograma, changeHideCronograma, changeProjectName,
     changeStatecron, checkCronogramaLocal, deleteCronograma,
-    updateCronograma, findCronogramaLocal, resetCurrentCronograma,iniciarNuevoCron,
+    updateCronograma, findCronogramaLocal, resetCurrentCronograma, iniciarNuevoCron,
 } from "./../../redux/reducers/cronogramaSlice";
 import {
     Autocomplete,
@@ -99,26 +99,26 @@ const CronogramaData = () => {
         if (cronos.sendDb === true)
             dispatch(createCronogramas(crons.cron[0]));
     }, [cronos.sendDb])
-    
+
     useLayoutEffect(() => {
-        
+
         if (cronos.list === '') {
             const userid = sessionStorage.getItem('usr_dt') ?
                 JSON.parse(sessionStorage.getItem('usr_dt'))['user_id'] : '';
             if (userid !== '') {
-                dispatch(listAllCronogramas({ id: userid }))       
+                dispatch(listAllCronogramas({ id: userid }))
             }
             //obtiene los cronogramas asociados al usuario cambia list to ready
         }
-        
+
     }, [])
 
     useEffect(() => {
         dispatch(resetCurrentCronograma());
-        if(cronos.list==='ready')
+        if (cronos.list === 'ready')
             dispatch(checkCronogramaLocal(empr_id));//does not depend on currentid
     }, [])
-    
+
 
 
     useEffect(() => {
@@ -245,6 +245,13 @@ const CronogramaData = () => {
     const padTo2Digits = (num) => {
         return num.toString().padStart(2, '0');
     }
+    const formatDate2 = (date) => {
+        return [
+            padTo2Digits(date.getDate()),
+            padTo2Digits(date.getMonth() + 1),
+            date.getFullYear(),
+        ].join('/');
+    }
 
     const formatDate = (date, type) => {
         // console.log("DATE"); console.log(date);
@@ -306,6 +313,21 @@ const CronogramaData = () => {
         } else {
             setFlag(false);
         }
+
+        console.log(tareas);
+        const tareas2=tareas;
+        // dispatch(changeStatecron('updated'));
+        tareas2.map((dataSubmitted) => {
+            const fechaInicio = `${formatDate2(dataSubmitted.start)}`;
+            const fechaFin = `${formatDate2(dataSubmitted.end)}`;
+            const task = {...dataSubmitted,
+                start: fechaInicio,
+                end: fechaFin,
+                // estado: 'ontime',
+            }
+            dispatch(updateCronograma(task));
+        })
+
     }, [tareas])
     //tareas es un useState
 
@@ -653,7 +675,7 @@ const CronogramaData = () => {
             <div className='text-center flex md:absolute z-0 md:z-0 lg:absolute lg:right-10 lg:top-10 lg:z-0 text-lg text-canvas4Txt'>
                 <span className="bg-violeta text-whitish m-2 p-1 rounded-md cursor-pointer" aria-label="Actualizar Cronograma" onClick={() => dispatch(updateCronogramas(crons.cron))}>
                     <AddIcon> </AddIcon> <span className="text-xs">Guardar Cronograma</span>
-                    </span>
+                </span>
             </div>
         </div>
         <ConfirmDialog

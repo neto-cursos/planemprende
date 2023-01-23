@@ -5,7 +5,7 @@ import EraseEntry from './../../../assets/icons/eraseEntry';
 import { nanoid } from 'nanoid';
 
 const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handleEdit, handleModulo, moduloNumber, moduloDB, imageName, buttonActiveHovering, classExtra, nameModulo, bgcolor, preguntas,
-    downlImage, costos = null, respuestasCostos = null }) => {
+    downlImage, costos = null, respuestasCostos = null,coin='Bs' }) => {
 
     // console.log("costos")
     // console.log(costos)
@@ -86,8 +86,8 @@ const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handl
                         return <div className='flex justify-center'><table key={nanoid()} className='w-4/5'>
                             <thead className="">
                                 <tr>
-                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Actividad</th>
-                                    <th className="p-3 text-sm font-semibold tracking-wide text-left">Monto</th>
+                                    <th className="p-1 text-sm font-semibold tracking-wide text-left">Actividad</th>
+                                    <th className="p-1 text-sm font-semibold tracking-wide text-left">Monto</th>
                                 </tr>
                             </thead>
                             <tbody className='divide-y divide-gray-100'>
@@ -101,8 +101,8 @@ const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handl
                                                     <tr key={respuesta.resp_cost_id}
                                                         className={`hover:text-red-700 cursor-pointer focus:ring-blue-500 text-bluenavish ${bgcolor}`}
                                                     >
-                                                        <td className='p-3 text-sm whitespace-pre-wrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_acti}</td>
-                                                        <td className='p-3 text-sm whitespace-nowrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_monto} Bs <span className='hidden'>{costoTotal+=respuesta.resp_cost_monto}</span></td>
+                                                        <td className='pl-3 py-1 text-sm whitespace-pre-wrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_acti}</td>
+                                                        <td className='pl-3 py-1 text-sm whitespace-nowrap' onClick={() => handleEdit(respuesta.resp_cost_id, moduloDB, true)}>{respuesta.resp_cost_monto} {coin} <span className='hidden'>{costoTotal+=respuesta.resp_cost_monto}</span></td>
                                                         <td>
                                                         <div className='flex justify-between '>
 
@@ -123,7 +123,7 @@ const ModuleBox = ({ respuestas, onMouseEnter, onMouseLeave, handleDelete, handl
                                             }
                                         })
                                     }</>
-                                }<tr className={`text-bluenavish`}><td className="p-3 text-sm whitespace-pre-wrap">Total: </td><td className="p-3 text-sm whitespace-pre-wrap">{costoTotal} Bs</td></tr></tbody></table></div>
+                                }<tr className={`text-bluenavish`}><td className="p-3 text-sm whitespace-pre-wrap">Total: </td><td className="p-3 text-sm whitespace-pre-wrap">{costoTotal} {coin}</td></tr></tbody></table></div>
                     }
                     )}
                 </div>}

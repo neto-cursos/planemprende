@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Canvas from '../components/Canvas';
 import InputLabel from '@mui/material/InputLabel';
@@ -7,12 +7,18 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { nanoid } from '@reduxjs/toolkit';
 import { modulos } from './../constants/modulos'
-import {motion} from 'framer-motion';
-import { useDispatch} from 'react-redux';
+import { motion } from 'framer-motion';
+import { useDispatch } from 'react-redux';
 import { changeMenu } from '../redux/reducers/menuSlice';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import OutsideAlerter from '../utils/OutsideAlerter';
+
 const MbCanvas = () => {
+    const [dropDownCoin, setDropDownCoin] = React.useState(false);
+    const [coin, setCoin] = React.useState('Bs');
+    const container = useRef(null);
     const { empr_id } = useParams();
-    const dispatch=useDispatch();
+    const dispatch = useDispatch();
     // useEffect(() => {
     //     dispatch(changeMenu({title:'MENU_CANVAS',empr_id:empr_id,modu_nume:1,bmc_type:'Industria'}))
     //   }, [])
@@ -20,12 +26,18 @@ const MbCanvas = () => {
         id: 1, value: `Módulo 1 
     ${modulos.find((nodo => nodo.modu_id == 1)).modulo}`
     });
-    
+
+    const toggleDDC = (mydopMenu) => {
+        setDropDownCoin(!dropDownCoin);
+        const { left } = container.current.getBoundingClientRect();
+        
+    }
+
     useEffect(() => {
         console.log("selectid");
         console.log(select.id);
-        dispatch(changeMenu({title:'MENU_CANVAS',empr_id:empr_id,modu_nume:select.id,bmc_type:'Industria'}));
-      }, [select]);
+        dispatch(changeMenu({ title: 'MENU_CANVAS', empr_id: empr_id, modu_nume: select.id, bmc_type: 'Industria' }));
+    }, [select]);
 
     const handleChange = (e) => {
         // console.log(e.target);
@@ -34,14 +46,14 @@ const MbCanvas = () => {
             value: `Módulo ${e.target.value} 
         ${modulos.find((nodo => nodo.modu_id == Number(e.target.value))).modulo}`,
         });
-    }    
+    }
     return (
         <motion.div className='flex relative flex-col my-2 pl-2 mb-16'
-        initial={{width:0,opacity:0}} animate={{width:"100%",opacity:2}} exit={{x:window.innerWidth, transition:{duration:0.1}}}
+            initial={{ width: 0, opacity: 0 }} animate={{ width: "100%", opacity: 2 }} exit={{ x: window.innerWidth, transition: { duration: 0.1 } }}
         >
 
             <h1 className="text-4xl text-darkish text-center">PLAN NEGOCIOS</h1>
-            <div className='pb-4 flex flex-row justify-center items-center'>
+            <div className='pb-4 flex flex-row justify-left lg:justify-center items-center'>
                 <FormControl variant="standard" sx={{ mr: 1, minWidth: 120 }}>
                     <InputLabel id="lblselectmodule">Módulo</InputLabel>
                     <Select key={nanoid()}
@@ -70,10 +82,22 @@ const MbCanvas = () => {
                         Llenar {select.value}
                     </button>
                 </Link>
-                
-            </div>
-            <Canvas>
+                <span className='p-1 pr-2' ref={container}>
+                    <button onClick={() => (toggleDDC('myDropdownCoin'))} className="drop-button text-green-500 py-2 px-2"> <span className="pr-2"><MonetizationOnIcon></MonetizationOnIcon></span> </button>
+                    {dropDownCoin && (
+                        <OutsideAlerter condition={dropDownCoin} setCondition={setDropDownCoin}>
+                            <div id="myDropdownCoin" className="dropdownlist absolute bg-gray-800 text-white mr-3 p-3 overflow-auto z-30 rounded-md">
+                                <span className="cursor-pointer p-2 hover:bg-gray-800 hover:text-redish text-white text-sm no-underline hover:no-underline block" onClick={()=>{setCoin('$');setDropDownCoin(false);}}><i className="fa fa-user fa-fw"></i> $</span>
+                                <span className="cursor-pointer p-2 hover:bg-gray-800 hover:text-redish text-white text-sm no-underline hover:no-underline block" onClick={()=>{setCoin('€');setDropDownCoin(false);}}><i className="fa fa-cog fa-fw"></i> €</span>
+                                <span className="cursor-pointer p-2 hover:bg-gray-800 hover:text-redish text-white text-sm no-underline hover:no-underline block" onClick={()=>{setCoin('Bs');setDropDownCoin(false);}}><i className="fa fa-cog fa-fw"></i> Bs</span>
+                            </div>
+                        </OutsideAlerter>
+                    )
+                    }
+                </span>
 
+            </div>
+            <Canvas coin={coin}>
             </Canvas>
             <div></div>
         </motion.div>
