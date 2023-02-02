@@ -315,12 +315,13 @@ const CronogramaData = () => {
         }
 
         console.log(tareas);
-        const tareas2=tareas;
+        const tareas2 = tareas;
         // dispatch(changeStatecron('updated'));
         tareas2.map((dataSubmitted) => {
             const fechaInicio = `${formatDate2(dataSubmitted.start)}`;
             const fechaFin = `${formatDate2(dataSubmitted.end)}`;
-            const task = {...dataSubmitted,
+            const task = {
+                ...dataSubmitted,
                 start: fechaInicio,
                 end: fechaFin,
                 // estado: 'ontime',
@@ -430,13 +431,28 @@ const CronogramaData = () => {
                     return object.displayorder;
                 });
                 let max = Math.max(...displayorder);
-                let vectorDep;
+                console.log(max);
+                let vectorDep=[];
                 if (dataSubmitted.dependencies === "predecesora") {
                     vectorDep = (crons.cron.map(object => {
                         if (object.displayorder === max)
                             return object.id;
                     }));
+                    
+                    //const vectorDep2 = vectorDep;
+                    vectorDep=vectorDep.filter(v=>v!==null&&v!==undefined);
+                    // vectorDep.push('1');
+                    // vectorDep.map((v, index) => {
+                    //     console.log(v);
+                    //     console.log(index);
+                    //     if (v === null || v === undefined){
+                    //         vectorDep2.splice(index, 1);}
+                    //     //vectorDep.pull(index);
+                    //     //array.remove(index);
+                    // });
+                    
                 }
+
                 max = max === 0 ? 1 : max;
                 // console.log(max);
                 // console.log(idActiva);

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { updateUsersPregs } from "../../../redux/actions/userPreguntaActions";
-import { updateUsersPreg } from "../../../redux/reducers/userPreguntaSlice";
+import { updateUsersPregs,deleteUsersPregs } from "../../../redux/actions/userPreguntaActions";
+import { updateUsersPreg,deleteUsersPreg } from "../../../redux/reducers/userPreguntaSlice";
 import OutsideAlerter from "./../../../utils/OutsideAlerter";
 import SendIcon from '@mui/icons-material/Send';
-
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 const Main = styled("div")`
   font-family: sans-serif;
   background: #f0f0f0;
@@ -55,7 +55,7 @@ const PreguntaEdit = ({ options, modulo,
     idPreg, setIdPreg, setEditUsrPreg, type = "pregunta" }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [trickySol, setTrickySol] = useState(false);
-
+    const [isDeleted, setIsDeleted] = useState(false);
     const toggling = () => setIsOpen(!isOpen);
     const pregTextRef = React.useRef(null);
     const enviar= React.useRef(false);
@@ -89,6 +89,13 @@ const PreguntaEdit = ({ options, modulo,
         setFormInput(prevState => ({ ...prevState, usr_preg_text: pregTextRef.current.value }))
         
     };
+    const deleteUserPregunta = (e) => {
+        // e.preventDefault();
+        enviar.current=true;
+        dispatch(deleteUsersPregs({usr_preg_id:idPreg}));
+        dispatch(deleteUsersPreg(idPreg));
+        setIsDeleted(true);        
+    };
     useEffect(() => {
         if (enviar.current===true) {
             dispatch(updateUsersPreg(formInput));
@@ -102,6 +109,12 @@ const PreguntaEdit = ({ options, modulo,
             }
         }
     }, [formInput]);
+    useEffect(() => {
+        if(isDeleted===true){
+            enviar.current=false;
+            setEditUsrPreg(false);
+        }
+    }, [isDeleted]);
     // onChange={() => (updateFormInput())}
     //'current' in pregTextRef?'value' in pregTextRef.current?pregTextRef.current.value:'':''
     return (
@@ -121,8 +134,10 @@ const PreguntaEdit = ({ options, modulo,
   */}
                 <textarea id='txtBox01' rows='2' name='usr_preg_text' className='w-5/6 m-0 pl-1 bg-white box-border text-[#3faffa] text-md font-medium border-solid border-[#e5e5e5] border-2' ref={pregTextRef} required/>
                 {/* <span name='usr_preg_text' id='usr_preg_text' className='m-0 pl-1 bg-white box-border text-[#3faffa] text-md font-medium border-solid border-[#e5e5e5] border-2' ref={pregTextRef} required contentEditable>{pregTextRef.current!=null?pregTextRef.current.value:''}</span> */}
-                <span type="submit" className="pl-2 w-1/6 cursor-pointer flex items-center" onClick={() => (updateUserPregunta())}><SendIcon></SendIcon></span>
-
+                <div className="pl-2 w-1/6 flex">
+                <span type="submit" className="cursor-pointer flex items-center" onClick={() => (updateUserPregunta())}><SendIcon></SendIcon></span>
+                <span type="submit" className="cursor-pointer flex items-center" onClick={() => (deleteUserPregunta())}><DeleteForeverIcon></DeleteForeverIcon></span>    
+                </div>
                 {/* <DropDownList>
                         {options.map(option => (
                             option.modu_id == modulo && type==='pregunta'?

@@ -21,6 +21,7 @@ const initialState = {
     // ],
     byModule: false,
     estado: 'loading',
+    usr_preg_id_temp: -1,
 }
 export const usersPregSlice = createSlice({
     name: 'userspreg',
@@ -39,13 +40,23 @@ export const usersPregSlice = createSlice({
         },
         addUsersPreg: (state, action) => {
             console.log(state, action);
-            state.usrPregs.push(action.payload);
+            if (state.usr_preg_id_temp !== -1) {
+                const preg = {
+                    usr_preg_id: state.usr_preg_id_temp,
+                    ...action.payload,
+                }
+                console.log(preg);
+                state.usrPregs.push(preg);
+                state.estado="copied";
+            } else {
+                state.usrPregs.push(action.payload);
+            }
         },
         deleteUsersPreg: (state, action) => {
             console.log(action.payload);
-            const nodo = state.usrPregs.find(usrPreg => usersPreg.usr_preg_id === action.payload)
+            const nodo = state.usrPregs.find(usrPreg => usrPreg.usr_preg_id === action.payload)
             if (nodo) {
-                state.usrPregs.splice(state.indexOf(nodo), 1)
+                state.usrPregs.splice(state.usrPregs.indexOf(nodo), 1)
             }
         },
         updateUsersPreg: (state, action) => {
@@ -79,8 +90,8 @@ export const usersPregSlice = createSlice({
             })
             .addCase(initUsersPregs.fulfilled, (state, action) => {
                 console.log("init userpregs FullFilled");
-                if(state.estado=="notinitiated"){
-                    state.estado="copied";
+                if (state.estado == "notinitiated") {
+                    state.estado = "copied";
                     return state;
                 }
             })
@@ -141,6 +152,13 @@ export const usersPregSlice = createSlice({
             })
             .addCase(createUsersPregs.fulfilled, (state, action) => {
                 console.log("CreateUserPregs FullFilled");
+                console.log(action.payload);
+                if (action.payload.usr_preg_id) {
+                    state.usr_preg_id_temp = action.payload.usr_preg_id;
+                    state.estado="addquestions";
+                }
+                // state=initialState;
+                return state;
             })
             .addCase(createUsersPregs.rejected, (state, action) => {
                 console.log("CreateUserPregs Rejected");

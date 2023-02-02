@@ -2,21 +2,30 @@ import React from 'react'
 import SelectCustom from "../../Forms/Elements/SelectCustom";
 import EditIcon from '@mui/icons-material/Edit';
 import PreguntaEdit from './PreguntaEdit';
-const PreguntaRespuesta = ({ onClose, handleSubmit, modulo, idRespuesta, preguntas, readySelect, inputTitle, respuesta, idPreg, setIdPreg }) => {
+import PreguntaAdd from './PreguntaAdd';
+import AddIcon from '@mui/icons-material/Add';
+const PreguntaRespuesta = ({ onClose, handleSubmit, modulo, idRespuesta, preguntas, readySelect, inputTitle, respuesta, idPreg, setIdPreg,empr_id }) => {
     const [editUsrPreg,setEditUsrPreg]=React.useState(false);
+    const [addUsrPreg,setAddUsrPreg]=React.useState(false);
     const editUsrPregOn=()=>{
         setEditUsrPreg(true);
+    }
+    const addUsrPregOn=()=>{
+        setAddUsrPreg(true);
     }
     return (<>
         {/*body*/}
         <div className="relative p-2 flex-auto">
             <div className='flex flex-row'>
-                {editUsrPreg===false?
+                {(editUsrPreg===false&&addUsrPreg===false)?
                 ((readySelect && idRespuesta !== 0) || idRespuesta === 0) && <><SelectCustom options={preguntas} modulo={modulo} respuesta={respuesta} idPreg={idPreg} setIdPreg={setIdPreg} idRespuesta={idRespuesta}
-                ></SelectCustom>
+                ></SelectCustom><div className='flex flex-col justify-center'>
+                <span className='flex m-0 p-0 items-center cursor-pointer' onClick={()=>{addUsrPregOn()}}>
+                    <AddIcon></AddIcon>
+                </span>
                 <span className='flex m-0 p-0 items-center cursor-pointer' onClick={()=>{editUsrPregOn()}}>
                     <EditIcon></EditIcon>
-                </span></>:<PreguntaEdit options={preguntas} modulo={modulo} idPreg={idPreg} setIdPreg={setIdPreg} setEditUsrPreg={setEditUsrPreg}></PreguntaEdit>
+                </span></div></>:editUsrPreg===true?<PreguntaEdit options={preguntas} modulo={modulo} idPreg={idPreg} setIdPreg={setIdPreg} setEditUsrPreg={setEditUsrPreg}></PreguntaEdit>:addUsrPreg===true?<PreguntaAdd options={preguntas} modulo={modulo} idPreg={idPreg} setIdPreg={setIdPreg} setAddUsrPreg={setAddUsrPreg} empr_id={empr_id}></PreguntaAdd>:''
                 }
             </div>
             <p className="my-4 text-slate-500 text-lg leading-relaxed">

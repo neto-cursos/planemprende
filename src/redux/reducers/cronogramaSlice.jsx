@@ -138,7 +138,7 @@ export const cronogramaSlice = createSlice({
             console.log("FindCronogramaLocal")
             console.log(cronograma)
             if (cronograma) {
-                cronograma.cron.map(t => { t.dependencies = []; t.progress = 0 })
+                // cronograma.cron.map(t => { t.dependencies = []; t.progress = 0 })
                 const cronograma_actual = {
                     idState: 'db',
                     loaded: false,

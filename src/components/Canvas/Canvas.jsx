@@ -247,8 +247,20 @@ const Canvas = ({ coin }) => {
                 }]))
             } else {
                 dispatch(updateRespuestas((respuestas)));
+                // dispatch(updateRespCostos((respuestasCostos)));
+            }
+
+            if (respuestasCostos.length === 0) {
+                console.log("entro a actualizar canvas vacio")
+                dispatch(updateRespCostos([{
+                    canv_id: canvasSelect.datos.canv_id,
+                    resp_cost_id: '',
+                }]))
+            } else {
+                // dispatch(updateRespuestas((respuestas)));
                 dispatch(updateRespCostos((respuestasCostos)));
             }
+
         }
     }, [canvasSelect.idState, sendAction]);
 
@@ -482,6 +494,7 @@ const Canvas = ({ coin }) => {
                         costos={costos.costos}
                         readySelect={readySelect}
                         setReadySelect={setReadySelect}
+                        empr_id={empr_id}
                     />
                 </div>}
 
