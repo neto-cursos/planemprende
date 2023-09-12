@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'KronaOneRegular';
+  src: local('KronaOneRegular'), url(./assets/fonts/KronaOneRegular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'AnekTeluguRegular';
+  src: local('AnekteluguRegular'), url(./assets/fonts/AnekTeluguRegular.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins'), url(./assets/fonts/Poppins.ttf) format('truetype');
+}
+
+@font-face {
+	font-family: "Bely Display";
+	src: url("./assets/fonts/BelyDisplay-Regular.woff2") format("woff2"), url("./assets/fonts/BelyDisplay-Regular.woff") format("woff");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "TT Norms Pro";
+	src: url("./assets/fonts/TTNormsPro-ExtraBold.woff2") format("woff2"), url("./assets/fonts/TTNormsPro-ExtraBold.woff") format("woff");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+:root {
+  --main-radius: 5px;
+  --main-padding: 5px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height:100% ;
+  justify-content:space-between;
+  /* height: 100vh; */
+}
+
+body {
+  @apply font-poppins;
+  /* position: relative; */
+  /* min-height: 100vh; */
+}
+
+#main {
+  width: 100vw;
+  /* height: 100vh; */
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.svg_fix {
+  shape-renderer: crispEdges;
+}
+
+.containerFooter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.container .load {
+  margin-top: 1em;
+  color: white;
+}
+
+.container .document {
+  margin: 1em 0;
+}
+
+.react-pdf .Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf .Page {
+  max-width: calc('100% - 2em');
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  margin: 1em;
+}
+
+.react-pdf .canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+.react-pdf .message {
+  padding: 20px;
+  color: white;
+}
+
+#divUC {
+	font-family: "TT Norms Pro", Helvetica, Arial, sans-serif;
+	@apply bg-white text-redish;
+	font-size: 31.58px;
+}
+
+#divUC .logo {
+	height: 68px;
+	margin-bottom: 140px;
+}
+
+#divUC .title {
+	font-family: "Bely Display", Helvetica, Arial, sans-serif;
+	font-size: 69.49px;
+	/* color: #0fe7c7; */
+  color:#EC0868;
+	margin-bottom: 52px;
+}
+
+#divUC .logo.animate,
+#divUC .title.animate,
+#divUC .lead.animate {
+	@apply opacity-100 transition-all duration-1000;
+}
+
+.logo.fade-in,
+.title.fade-in,
+.lead.fade-in {
+	@apply opacity-100;
+}
+@media (min-width: 768px) {
+	#divUC br {
+		content: " ";
+		display: none;
+	}
+}
+
+@media (max-width: 767px) {
+	#divUC{
+    font-size: 17.11px;
+  }
+	#divUC .logo {
+		height: 40px;
+		margin-bottom: 100px;
+	}
+
+	#divUC .title {
+		font-size: 34.04px;
+		margin-bottom: 35px;
+	}
+
+	#divUC .lead {
+		margin-left: 120px;
+	}
+}

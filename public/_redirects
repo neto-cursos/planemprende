@@ -1,0 +1,10 @@
+/api/* http://35.173.242.168/public/api/:splat 200
+/welcome/api/* http://35.173.242.168/public/api/:splat 200!
+/emprendimiento/:id/cronograma/api/* http://35.173.242.168/public/api/:splat 200!
+/emprendimiento/:empr_id/bmc/api/* http://35.173.242.168/public/api/:splat 200!
+/misemprendimientos/api/* http://35.173.242.168/public/api/:splat 200!
+/emprendimiento/api/* http://35.173.242.168/public/api/:splat 200!
+/emprendimiento/:id/api/* http://35.173.242.168/public/api/:splat 200!
+/misemprendimientos/fill/:empr/api/* http://35.173.242.168/public/api/:splat 200!
+/misemprendimientos/fill/:empr/:usr/api/* http://35.173.242.168/public/api/:splat 200!
+/* /index.html 200

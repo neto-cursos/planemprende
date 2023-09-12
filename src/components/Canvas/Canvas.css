@@ -1,0 +1,44 @@
+/*size: 279mm 216mm; or landscape
+US Paper Size	72 PPI (Width x Height)	300 PPI (Width x Height)
+Letter	612 x 791 pixels	2551 x 3295 pixels
+Legal	612 x 1009 pixels	2551 x 4205 pixels
+Half Letter	397 x 612 pixels	1654 x 2551 pixels
+Junior Legal	360 x 575 pixels	1500 x 2398 pixels
+*/
+@media print {
+  @page {
+    size: landscape;
+  }
+
+  #micanvasPrint {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    z-index: 15;
+    top: 1%;
+    left: 1%;
+    right: 1%;
+    bottom: 1%;
+    padding: 1rem 1rem 1rem 1rem;
+  }
+}
+
+/* use transform if @page is not supported */
+/* @media print {
+  #micanvasPrint2 {
+    z-index: 15;
+    transform: rotate(90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw; */
+    /* overflow-x: hidden; */
+    /* position: absolute; */
+    /* left: 0;
+    top: 0; */
+    /* top: 1%;
+    left: 1%;
+    right: 1%;
+    bottom: 1%;
+    padding: 1rem 1rem 1rem 1rem;
+  }
+} */

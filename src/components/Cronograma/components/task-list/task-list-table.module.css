@@ -1,0 +1,169 @@
+.rowTable {
+  overflow: hidden;
+  display: grid;
+  /* grid-template-columns: repeat(4,1fr); */
+  grid-template-columns: 4fr 2fr 2fr 3fr 1fr 1fr 1fr 2fr 0.5fr 0.5fr;
+  grid-gap: 0.25rem;
+  color: #222;
+  border-bottom: 1px solid #ddd;
+  padding: 0.25rem 0;
+  /* text-decoration: underline; */
+  border-bottom: unset;
+  /* font-weight: 800; */
+  /* grid-auto-rows: 500px;  */
+  grid-auto-rows: minmax(auto, 2.5rem);
+
+  /* text-align: right; */
+}
+
+
+
+.rowTableTitle {
+  color: white;
+  overflow: hidden;
+  display: grid;
+  /* grid-template-columns: repeat(4,1fr); */
+  grid-template-columns: 4fr 2fr 2fr 3fr 1fr 1fr 1fr 2fr 0.5fr 0.5fr;
+  grid-gap: 0.25rem;
+  color: #222;
+  /* background: linear-gradient(90deg, #daae51, rgb(255, 77, 0), #daae51); */
+  
+    background: linear-gradient(
+      90deg,
+      rgba(218, 174, 81, 0.4),   /* Orange */
+      rgba(255, 77, 0, 0.2),   /* Red with 50% transparency */
+      rgba(218, 174, 81, 0.4)    /* Orange */
+    );
+  
+  /* You can adjust the degree (90deg) to change the direction of the gradient */
+  /* You can also specify additional properties like background-size, background-repeat, etc. */
+
+  border-bottom: 1px solid #ddd;
+  padding: 0.25rem 0;
+  /* text-decoration: underline; */
+  border-bottom: unset;
+  /* font-weight: 800; */
+  /* grid-auto-rows: 500px;  */
+  grid-auto-rows: minmax(auto, 2.5rem);
+
+  /* text-align: right; */
+}
+
+.taskListWrapper {
+
+  border-bottom: #e6e4e4 1px solid;
+  border-top: #e6e4e4 1px solid;
+  border-left: #e6e4e4 1px solid;
+  border-right: #e6e4e4 1px solid;
+
+  border-radius: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 5px 12px -7px #7e8f94;
+
+
+  /* display: table;
+    border-bottom: #e6e4e4 1px solid;
+    border-left: #e6e4e4 1px solid; */
+}
+
+.taskListTableRow {
+
+  overflow: hidden;
+  /* margin: auto; */
+  display: grid;
+  /* grid-template-columns: repeat(4,1fr); */
+  grid-template-columns: 4fr 2fr 2fr 3fr 1fr 1fr 1fr 2fr 0.5fr 0.5fr;
+  grid-gap: 0.25rem;
+  color: #222;
+  /* border-bottom: 1px solid #ddd; */
+  padding: 0.25rem 0;
+  /* text-decoration: underline; */
+  border-bottom: unset;
+  /* font-weight: 800; */
+  /* grid-auto-rows: 500px;  */
+  grid-auto-rows: minmax(auto, 2.5rem);
+
+
+  /* display: table-row;
+    text-overflow: ellipsis; */
+}
+
+.taskListTableRow:nth-of-type(even) {
+  background-color: #f0eded;
+}
+
+.rowTable:nth-of-type(2n) {
+  background-color: #f0eded;
+}
+
+.taskListCell {
+  /* display: table-cell; */
+  vertical-align: middle;
+  /* white-space: nowrap; */
+
+  /* overflow-wrap: break-word;
+    word-break: break-all;
+    inline-size: 100px; */
+
+}
+
+.taskListCell:hover {
+  /* color: blue; */
+}
+
+.taskListNameWrapper {
+  display: flex;
+}
+
+.taskListExpander {
+  color: rgb(86 86 86);
+  font-size: 0.6rem;
+  padding: 0.15rem 0.2rem 0rem 0.2rem;
+  user-select: none;
+  cursor: pointer;
+}
+
+.taskListEmptyExpander {
+  font-size: 0.6rem;
+  padding-left: 1rem;
+  user-select: none;
+}
+
+
+@media (max-width: 600px) {
+
+  .rowTable {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ganttTable_Header {
+    display: none;
+  }
+
+  .term-grid {
+    grid-template-columns: 1fr;
+    grid-gap: 0.5em;
+  }
+
+  .rowTable div:first-child {
+    text-align: left;
+    margin: 0;
+  }
+
+  .rowTable {
+    margin-top: -10px;
+    font-style: italic;
+    order: 1;
+  }
+
+  .definition {
+    order: 2;
+  }
+
+  .grid-header {
+    display: none;
+  }
+}
